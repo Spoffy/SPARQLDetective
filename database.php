@@ -16,8 +16,8 @@ ENGINE = InnoDB;
 
 CREATE TABLE `open_data`.`url_statuses` ( 
     `url` VARCHAR(2083) NOT NULL , 
-    `success` BOOLEAN NOT NULL , 
     `status` TEXT NOT NULL , 
+    `success` BOOLEAN NOT NULL , 
     PRIMARY KEY (`url`(2083))
 ) 
 ENGINE = InnoDB;
@@ -32,9 +32,17 @@ PRIMARY KEY (`run_id`)
 ENGINE = InnoDB;
 DB;
 
-$addDataQuery = "INSERT INTO open_data.app_data VALUES (:time, :label, :type, :lat, :long, :accuracy)";
+$insertTestDataQuery = <<< DB
+INSERT IGNORE INTO open_data.url_statuses  VALUES
+("http://www.google.co.uk", "200", True),
+("https://www.yahoo.co.uk", "200", True),
+("https://data.soton.ac.uk", "404", False);
+DB;
 
-function getDatabaseHandle() {
+$addDataQuery = "INSERT INTO open_data.app_data VALUES (:time, :label, :type, :lat, :long, :accuracy)";
+$listCheckedURLsQuery = "SELECT url, status, success FROM open_data.url_statuses";
+
+function db_getConn() {
     $conn = new PDO("mysql:host=" . CONFIG_MYSQL_HOST . ";dbname=" . CONFIG_MYSQL_DB,
         CONFIG_MYSQL_USERNAME,
         CONFIG_MYSQL_PASSWORD);
@@ -46,23 +54,20 @@ function getDatabaseHandle() {
     return $conn;
 }
 
-try {
-    $conn = getDatabaseHandle();
+function db_insertTestData(PDO $conn) {
+    global $insertTestDataQuery;
+    $conn->exec($insertTestDataQuery);
+}
 
-    $addDataStatement = $conn->prepare($addDataQuery);
+function db_urlStatusRows(PDO $conn) {
+    global $listCheckedURLsQuery;
+    $statement = $conn->query($listCheckedURLsQuery);
+    return $statement->fetchAll(PDO::FETCH_NUM);
+}
 
-    $params = array(
-        ":time" => 0,
-        ":label" => "Something Else",
-        ":type" => "Something"
-    );
-
-    $params[":lat"] = 0;
-    $params[":long"] = 0;
-    $params[":accuracy"] = -1;
-
-    print($addDataStatement->execute($params));
+/*
 } catch(PDOException $e) {
     error_log($e->getMessage());
     print("MySQL Database error. See PHP error log");
 }
+*/
