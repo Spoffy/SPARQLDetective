@@ -5,8 +5,8 @@
     $conn = db_getConn();
     db_insertTestData($conn);
 
-    function array2dToTable($data) {
-        $tableHtml = "<table>";
+    function array2dToTableBody($data) {
+        $tableHtml = "";
         foreach($data as $row) {
             $tableHtml .= "<tr>";
             foreach($row as $item) {
@@ -16,12 +16,11 @@
             }
             $tableHtml .= "</tr>";
         }
-        $tableHtml .= "</table>";
         return $tableHtml;
     }
 
     $url_status_rows = db_urlStatusRows($conn);
-    $url_status_content = array2dToTable($url_status_rows);
+    $url_status_content = array2dToTableBody($url_status_rows);
 ?>
 
 <!DOCTYPE html>
@@ -32,5 +31,8 @@
     <link rel="stylesheet" type="text/css" href="viewer.css" media="all" /
 </head>
 <body>
+<table class="results">
 <?php print($url_status_content) ?>
+</table>
+
 </body>
