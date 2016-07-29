@@ -1,0 +1,5 @@
+.results tr, .results td {
+    border: 1px solid black;
+    padding: 0px;
+    margin: 0px;
+}
