@@ -119,7 +119,9 @@ class LinkCheck {
     private function codeToStatusMessage($statusCode, $httpCode) {
         $statusMessage = $httpCode;
 
-        if($statusCode) {
+        //httpCode should be 0 if we got a cURL error.
+        //Checking statusCode doesn't work, as there's a HTTP error code.
+        if($statusCode > 0 && $statusCode != CURLE_HTTP_NOT_FOUND) {
             if(key_exists($statusCode, LinkCheck::$cURLErrorCodeToMessage)) {
                 $statusMessage = LinkCheck::$cURLErrorCodeToMessage[$statusCode];
             } else {
@@ -158,17 +160,22 @@ class LinkCheck {
         } while ($remaining_messages > 0);
         return $results;
     }
+
+    public static function runTests() {
+        $tests = array(
+            "http://www.yahoo.co.uk",
+            "http://www.google.co.uk/teapot",
+            "http://www.google.com/404please",
+            "http://www.google.de",
+            "http://www.thereisnowaythisisactuallyadomainname.co.uk",
+            "##########!!"
+        );
+
+        $result = new LinkCheck($tests);#
+
+        foreach($result->getResults() as $item) {
+            print("URL: " . $item->url . " Success: " . $item->success . " Code: " . $item->statusMessage . "\n");
+        }
+    }
 }
 
-$tests = array(
-    "http://www.yahoo.co.uk",
-    "http://www.google.co.uk",
-    "http://www.google.com",
-    "http://www.google.de",
-    "http://www.googleasdqgqeg.co.uk"
-);
-$result = new LinkCheck($tests);#
-
-foreach($result->getResults() as $item) {
-    print("URL: " . $item->url . " Success: " . $item->success . " Code: " . $item->statusMessage . "\n");
-}
