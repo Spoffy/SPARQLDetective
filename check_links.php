@@ -2,13 +2,13 @@
 
 class LinkCheckResult {
     public $url;
-    public $status;
+    public $success;
     public $statusMessage;
 
-    public function __construct($url, $status, $statusMessage)
+    public function __construct($url, $success, $statusMessage)
     {
         $this->url = $url;
-        $this->status = $status;
+        $this->success = $success;
         $this->statusMessage = $statusMessage;
     }
 }
@@ -116,8 +116,8 @@ class LinkCheck {
         throw new Exception("Failed to get URL associated with Handle. This should NEVER occur. This is a bug.");
     }
 
-    private function codeToStatusMessage($statusCode, $handle) {
-        $statusMessage = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+    private function codeToStatusMessage($statusCode, $httpCode) {
+        $statusMessage = $httpCode;
 
         if($statusCode) {
             if(key_exists($statusCode, LinkCheck::$cURLErrorCodeToMessage)) {
@@ -129,10 +129,16 @@ class LinkCheck {
         return $statusMessage;
     }
 
-    private function createResult($status_code, $handle) {
+    private function wasRequestSuccessful($statusCode, $httpCode) {
+        if($httpCode >= 400 || $statusCode > 0) { return false; }
+        return true;
+    }
+
+    private function createResult($statusCode, $handle) {
         $url = $this->handleToURL($handle);
-        $success = false;
-        $status_message = $this->codeToStatusMessage($status_code, $handle);
+        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        $success = $this->wasRequestSuccessful($statusCode, $httpCode);
+        $status_message = $this->codeToStatusMessage($statusCode, $httpCode);
 
         return new LinkCheckResult($url, $success, $status_message);
     }
@@ -164,5 +170,5 @@ $tests = array(
 $result = new LinkCheck($tests);#
 
 foreach($result->getResults() as $item) {
-    print("URL: " . $item->url . " Code: " . $item->statusMessage . "\n");
+    print("URL: " . $item->url . " Success: " . $item->success . " Code: " . $item->statusMessage . "\n");
 }
