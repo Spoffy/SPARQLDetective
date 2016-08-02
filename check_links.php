@@ -1,5 +1,18 @@
 <?php
 
+class LinkCheckResult {
+    public $url;
+    public $status;
+    public $statusMessage;
+
+    public function __construct($url, $status, $statusMessage)
+    {
+        $this->url = $url;
+        $this->status = $status;
+        $this->statusMessage = $statusMessage;
+    }
+}
+
 //This exists purely so we can use RAII to prevent cURL handles from leaking
 //Can't use try .. finally as we need to support PHP 5.2.
 class LinkCheck {
@@ -7,6 +20,21 @@ class LinkCheck {
     //Accessing their contents is fine.
     private $handles;
     private $multiHandle;
+
+    //Status messages we want to customise.
+    //In this case, all the ones we're interested in.
+    private static $cURLErrorCodeToMessage = array(
+        CURLE_UNSUPPORTED_PROTOCOL => "Unsupported Protocol",
+        CURLE_URL_MALFORMAT => "Malformed URL",
+        CURLE_COULDNT_RESOLVE_PROXY => "Invalid Proxy Configured",
+        CURLE_COULDNT_RESOLVE_HOST => "Unable to resolve host",
+        CURLE_COULDNT_CONNECT => "Unable to connect to host",
+        CURLE_OPERATION_TIMEOUTED => "Operation Timed Out",
+        CURLE_SSL_CONNECT_ERROR => "SSL/TLS handshake error",
+        CURLE_SSL_CERTPROBLEM => "Problem with local SSL certificate",
+        CURLE_SSL_CIPHER => "Unable to use specified SSL cipher",
+        CURLE_SSL_CACERT => "Untrusted remote SSL certificate"
+    );
 
     function __construct($urls)
     {
@@ -26,6 +54,7 @@ class LinkCheck {
 
     private function createHandleForURL($url) {
         $curlHandle = curl_init($url);
+        curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
         //Force it to use get requests
         curl_setopt($curlHandle, CURLOPT_HTTPGET, true);
         //Force a fresh connection for each request. Not sure if this is needed...
@@ -43,7 +72,7 @@ class LinkCheck {
     private function urlsToHandles($urls) {
         $handles = array();
         foreach($urls as $url) {
-            $handles[] = $this->createHandleForURL($url);
+            $handles[$url] = $this->createHandleForURL($url);
         }
         return $handles;
     }
@@ -78,11 +107,49 @@ class LinkCheck {
         }
     }
 
+    private function handleToURL($sourceHandle) {
+        foreach($this->handles as $url => $currentHandle) {
+            if($sourceHandle == $currentHandle) {
+                return $url;
+            }
+        }
+        throw new Exception("Failed to get URL associated with Handle. This should NEVER occur. This is a bug.");
+    }
+
+    private function codeToStatusMessage($statusCode, $handle) {
+        $statusMessage = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+
+        if($statusCode) {
+            if(key_exists($statusCode, LinkCheck::$cURLErrorCodeToMessage)) {
+                $statusMessage = LinkCheck::$cURLErrorCodeToMessage[$statusCode];
+            } else {
+                $statusMessage = curl_strerror($statusCode);
+            }
+        }
+        return $statusMessage;
+    }
+
+    private function createResult($status_code, $handle) {
+        $url = $this->handleToURL($handle);
+        $success = false;
+        $status_message = $this->codeToStatusMessage($status_code, $handle);
+
+        return new LinkCheckResult($url, $success, $status_message);
+    }
+
+    //We need to use curl_multi_info_read for error codes
+    //Normal curl handles always return 0 (no error) when attached to the multi-handle.
     public function getResults() {
         $results = array();
-        foreach($this->handles as $handler) {
-            $results[curl_getinfo($handler, CURLINFO_EFFECTIVE_URL)] = curl_getinfo($handler, CURLINFO_HTTP_CODE);
-        }
+        do {
+            //Set by curl_multi_info_read
+            $remaining_messages = 0;
+            $info = curl_multi_info_read($this->multiHandle, $remaining_messages);
+
+            $status_code = $info["result"];
+            $handle = $info["handle"];
+            $results[] = $this->createResult($status_code, $handle);
+        } while ($remaining_messages > 0);
         return $results;
     }
 }
@@ -92,10 +159,10 @@ $tests = array(
     "http://www.google.co.uk",
     "http://www.google.com",
     "http://www.google.de",
-    "http://www.google.co.u"
+    "http://www.googleasdqgqeg.co.uk"
 );
 $result = new LinkCheck($tests);#
 
-foreach($result->getResults() as $url => $code) {
-    print("URL: " . $url . " Code: " . $code . "\n");
+foreach($result->getResults() as $item) {
+    print("URL: " . $item->url . " Code: " . $item->statusMessage . "\n");
 }
