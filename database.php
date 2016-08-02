@@ -24,7 +24,7 @@ ENGINE = InnoDB;
 
 CREATE TABLE `open_data`.`system_status` ( 
 `run_id` INT NOT NULL AUTO_INCREMENT , 
-`status` ENUM('DONE','PREPARING','PROCESSING','NOT_STARTED') NOT NULL DEFAULT 'NOT_STARTED' , 
+`status` ENUM('DONE','PREPARING','PREPARED','PROCESSING','NOT_STARTED') NOT NULL DEFAULT 'NOT_STARTED' , 
 `start_time` DATETIME NULL , 
 `end_time` DATETIME NULL , 
 PRIMARY KEY (`run_id`)
@@ -42,27 +42,42 @@ DB;
 $addDataQuery = "INSERT INTO open_data.app_data VALUES (:time, :label, :type, :lat, :long, :accuracy)";
 $listCheckedURLsQuery = "SELECT url, status, success FROM open_data.url_statuses";
 
-function db_getConn() {
-    $conn = new PDO("mysql:host=" . CONFIG_MYSQL_HOST . ";dbname=" . CONFIG_MYSQL_DB,
-        CONFIG_MYSQL_USERNAME,
-        CONFIG_MYSQL_PASSWORD);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+class Database {
+    public $conn;
 
-    $conn->exec($GLOBALS["createDatabaseQuery"]);
-    $conn->exec($GLOBALS["createTablesQuery"]);
+    public function connect() {
+        $this->conn = new PDO("mysql:host=" . CONFIG_MYSQL_HOST . ";dbname=" . CONFIG_MYSQL_DB,
+            CONFIG_MYSQL_USERNAME,
+            CONFIG_MYSQL_PASSWORD);
+        $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    return $conn;
-}
+        $this->conn->exec($GLOBALS["createDatabaseQuery"]);
+        $this->conn->exec($GLOBALS["createTablesQuery"]);
 
-function db_insertTestData(PDO $conn) {
-    global $insertTestDataQuery;
-    $conn->exec($insertTestDataQuery);
-}
+        return $this;
+    }
 
-function db_urlStatusRows(PDO $conn) {
-    global $listCheckedURLsQuery;
-    $statement = $conn->query($listCheckedURLsQuery);
-    return $statement->fetchAll(PDO::FETCH_NUM);
+    public static function createAndConnect() {
+        $database = new Database();
+        $database->connect();
+        return $database;
+    }
+
+    public function populateWithTestData() {
+        global $insertTestDataQuery;
+        $this->conn->exec($insertTestDataQuery);
+        return $this;
+    }
+
+    public function getUrlStatusRows() {
+        global $listCheckedURLsQuery;
+        $statement = $this->conn->query($listCheckedURLsQuery);
+        return $statement->fetchAll(PDO::FETCH_NUM);
+    }
+
+    public function getLastRun() {
+
+    }
 }
 
 /*

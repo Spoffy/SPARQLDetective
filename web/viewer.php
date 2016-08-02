@@ -2,8 +2,8 @@
     $BASE_DIR = dirname(__DIR__);
     require_once("$BASE_DIR/database.php");
 
-    $conn = db_getConn();
-    db_insertTestData($conn);
+    $database = Database::createAndConnect();
+    $database->populateWithTestData();
 
     function array2dToTableBody($data) {
         $tableHtml = "";
@@ -19,7 +19,7 @@
         return $tableHtml;
     }
 
-    $url_status_rows = db_urlStatusRows($conn);
+    $url_status_rows = $database->getUrlStatusRows();
     $url_status_content = array2dToTableBody($url_status_rows);
 ?>
 
