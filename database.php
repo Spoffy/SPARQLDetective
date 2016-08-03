@@ -6,8 +6,8 @@ require_once("config.php");
 //Moving to constants might be the way forward.
 class DBQueries
 {
-    public static $createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS open_data";
-    public static $createTablesQuery = <<< DB
+    public static $createDatabase = "CREATE DATABASE IF NOT EXISTS open_data";
+    public static $createTables = <<< DB
 CREATE TABLE IF NOT EXISTS `open_data`.`urls_found` ( 
     `subject` VARCHAR(2083) NOT NULL , 
     `predicate` TEXT NOT NULL , 
@@ -36,20 +36,20 @@ PRIMARY KEY (`run_id`)
 ENGINE = InnoDB;
 DB;
 
-    public static $insertTestDataQuery = <<< DB
+    public static $insertTestData = <<< DB
 INSERT IGNORE INTO open_data.url_statuses  VALUES
 ("http://www.google.co.uk", "200", True),
 ("https://www.yahoo.co.uk", "200", True),
 ("https://data.soton.ac.uk", "404", False);
 DB;
 
-    public static $listCheckedURLsQuery = "SELECT url, status, success FROM open_data.url_statuses";
-    public static $lastRunQuery = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
-    public static $newRunQuery = "INSERT INTO open_data.system_status(start_time) VALUES (NOW())";
+    public static $listCheckedURLs = "SELECT url, status, success FROM open_data.url_statuses";
+    public static $lastRun = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
+    public static $newRun = "INSERT INTO open_data.system_status(start_time) VALUES (NOW())";
 
     //TODO Add proper support for multiple runs.
     //This might not protect against a new run starting while the old one is running.
-    public static $changeCurrentRunStatusQuery = <<<DB
+    public static $changeCurrentRunStatus = <<<DB
 START TRANSACTION;
 #Get the latest (current) run.
 SELECT @run:=run_id FROM open_data.system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;
@@ -71,8 +71,8 @@ class Database {
             CONFIG_MYSQL_PASSWORD);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->conn->exec(DBQueries::$createDatabaseQuery);
-        $this->conn->exec(DBQueries::$createTablesQuery);
+        $this->conn->exec(DBQueries::$createDatabase);
+        $this->conn->exec(DBQueries::$createTables);
 
         return $this;
     }
@@ -84,27 +84,27 @@ class Database {
     }
 
     public function populateWithTestData() {
-        $this->conn->exec(DBQueries::$insertTestDataQuery);
+        $this->conn->exec(DBQueries::$insertTestData);
         return $this;
     }
 
     public function getUrlStatusRows() {
-        $statement = $this->conn->query(DBQueries::$listCheckedURLsQuery);
+        $statement = $this->conn->query(DBQueries::$listCheckedURLs);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getLastRun() {
-        $statement = $this->conn->query(DBQueries::$lastRunQuery);
+        $statement = $this->conn->query(DBQueries::$lastRun);
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
     public function newRun() {
-        $this->conn->exec(DBQueries::$newRunQuery);
+        $this->conn->exec(DBQueries::$newRun);
     }
 
     //Based on
     public function changeRunStatusFromXtoY($old, $new) {
-        $statement = $this->conn->prepare(DBQueries::$changeCurrentRunStatusQuery);
+        $statement = $this->conn->prepare(DBQueries::$changeCurrentRunStatus);
         $statement->execute(array(":oldStatus" => $old, ":newStatus" => $new));
         //Transition successful if we managed to update a row.
         //TODO Make this use SQL errors in the future?
