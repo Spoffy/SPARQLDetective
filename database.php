@@ -1,9 +1,13 @@
 <?php
 require_once("config.php");
 
-$createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS open_data";
-
-$createTablesQuery = <<< DB
+//Contains all the query constants.
+//This is done so we don't need "global" every time we use one.
+//Moving to constants might be the way forward.
+class DBQueries
+{
+    public static $createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS open_data";
+    public static $createTablesQuery = <<< DB
 CREATE TABLE IF NOT EXISTS `open_data`.`urls_found` ( 
     `subject` VARCHAR(2083) NOT NULL , 
     `predicate` TEXT NOT NULL , 
@@ -32,15 +36,17 @@ PRIMARY KEY (`run_id`)
 ENGINE = InnoDB;
 DB;
 
-$insertTestDataQuery = <<< DB
+    public static $insertTestDataQuery = <<< DB
 INSERT IGNORE INTO open_data.url_statuses  VALUES
 ("http://www.google.co.uk", "200", True),
 ("https://www.yahoo.co.uk", "200", True),
 ("https://data.soton.ac.uk", "404", False);
 DB;
 
-$addDataQuery = "INSERT INTO open_data.app_data VALUES (:time, :label, :type, :lat, :long, :accuracy)";
-$listCheckedURLsQuery = "SELECT url, status, success FROM open_data.url_statuses";
+    public static $addDataQuery = "INSERT INTO open_data.app_data VALUES (:time, :label, :type, :lat, :long, :accuracy)";
+    public static $listCheckedURLsQuery = "SELECT url, status, success FROM open_data.url_statuses";
+    public static $lastRunQuery = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
+}
 
 class Database {
     public $conn;
@@ -51,8 +57,8 @@ class Database {
             CONFIG_MYSQL_PASSWORD);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->conn->exec($GLOBALS["createDatabaseQuery"]);
-        $this->conn->exec($GLOBALS["createTablesQuery"]);
+        $this->conn->exec(DBQueries::$createDatabaseQuery);
+        $this->conn->exec(DBQueries::$createTablesQuery);
 
         return $this;
     }
@@ -64,19 +70,18 @@ class Database {
     }
 
     public function populateWithTestData() {
-        global $insertTestDataQuery;
-        $this->conn->exec($insertTestDataQuery);
+        $this->conn->exec(DBQueries::$insertTestDataQuery);
         return $this;
     }
 
     public function getUrlStatusRows() {
-        global $listCheckedURLsQuery;
-        $statement = $this->conn->query($listCheckedURLsQuery);
-        return $statement->fetchAll(PDO::FETCH_NUM);
+        $statement = $this->conn->query(DBQueries::$listCheckedURLsQuery);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getLastRun() {
-
+        $statement = $this->conn->query(DBQueries::$lastRunQuery);
+        return $statement->fetch(PDO::FETCH_ASSOC);
     }
 }
 
