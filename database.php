@@ -43,9 +43,23 @@ INSERT IGNORE INTO open_data.url_statuses  VALUES
 ("https://data.soton.ac.uk", "404", False);
 DB;
 
-    public static $addDataQuery = "INSERT INTO open_data.app_data VALUES (:time, :label, :type, :lat, :long, :accuracy)";
     public static $listCheckedURLsQuery = "SELECT url, status, success FROM open_data.url_statuses";
     public static $lastRunQuery = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
+    public static $newRunQuery = "INSERT INTO open_data.system_status(start_time) VALUES (NOW())";
+
+    //TODO Add proper support for multiple runs.
+    //This might not protect against a new run starting while the old one is running.
+    public static $changeCurrentRunStatusQuery = <<<DB
+START TRANSACTION;
+#Get the latest (current) run.
+SELECT @run:=run_id FROM open_data.system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;
+#Update the status, if it's what we were expecting.
+UPDATE open_data.system_status 
+	SET status=:newStatus
+	WHERE run_id=@run AND status=:oldStatus;
+COMMIT;
+DB;
+
 }
 
 class Database {
@@ -82,6 +96,19 @@ class Database {
     public function getLastRun() {
         $statement = $this->conn->query(DBQueries::$lastRunQuery);
         return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function newRun() {
+        $this->conn->exec(DBQueries::$newRunQuery);
+    }
+
+    //Based on
+    public function changeRunStatusFromXtoY($old, $new) {
+        $statement = $this->conn->prepare(DBQueries::$changeCurrentRunStatusQuery);
+        $statement->execute(array(":oldStatus" => $old, ":newStatus" => $new));
+        //Transition successful if we managed to update a row.
+        //TODO Make this use SQL errors in the future?
+        return $statement->rowCount() > 0;
     }
 }
 
