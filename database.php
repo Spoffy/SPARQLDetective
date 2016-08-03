@@ -3,15 +3,16 @@ require_once("config.php");
 
 //Contains all the query constants.
 //This is done so we don't need "global" every time we use one.
-//Moving to constants might be the way forward.
+//TODO Make all of these constants
 class DBQueries
 {
     public static $createDatabase = "CREATE DATABASE IF NOT EXISTS open_data";
+    //TODO change schema to correctly refer to the "remainder" of the triple, as URL not always object
     public static $createTables = <<< DB
 CREATE TABLE IF NOT EXISTS `open_data`.`urls_found` ( 
     `subject` VARCHAR(2083) NOT NULL , 
     `predicate` TEXT NOT NULL , 
-    `object` TEXT NOT NULL , 
+    `url` TEXT NOT NULL , 
     `graph` TEXT NOT NULL , 
     `label` TEXT NULL , 
     PRIMARY KEY (`subject`)
@@ -28,7 +29,7 @@ ENGINE = InnoDB;
 
 CREATE TABLE `open_data`.`system_status` ( 
 `run_id` INT NOT NULL AUTO_INCREMENT , 
-`status` ENUM('DONE','PREPARING','PREPARED','PROCESSING','NOT_STARTED') NOT NULL DEFAULT 'NOT_STARTED' , 
+`state` ENUM('DONE','PREPARING','PREPARED','PROCESSING','NOT_STARTED') NOT NULL DEFAULT 'NOT_STARTED' , 
 `start_time` DATETIME NULL , 
 `end_time` DATETIME NULL , 
 PRIMARY KEY (`run_id`)
@@ -47,17 +48,16 @@ DB;
     public static $lastRun = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
     public static $newRun = "INSERT INTO open_data.system_status(start_time) VALUES (NOW())";
 
+    public static $getUrls = "SELECT DISTINCT url FROM open_data.urls_found";
+
     //TODO Add proper support for multiple runs.
     //This might not protect against a new run starting while the old one is running.
-    public static $changeCurrentRunStatus = <<<DB
-START TRANSACTION;
-#Get the latest (current) run.
-SELECT @run:=run_id FROM open_data.system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;
-#Update the status, if it's what we were expecting.
+    public static $lastRunLocking = "SELECT run_id FROM open_data.system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;";
+    //Only update the old state if it hasn't changed since the program last read it.
+    public static $transitionRunState = <<<DB
 UPDATE open_data.system_status 
-	SET status=:newStatus
-	WHERE run_id=@run AND status=:oldStatus;
-COMMIT;
+	SET state=:newState
+	WHERE run_id=:runId AND state=:oldState;
 DB;
 
 }
@@ -93,6 +93,11 @@ class Database {
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getUrls() {
+        $statement = $this->conn->query(DBQueries::$getUrls);
+        return $statement->fetchAll(PDO::FETCH_NUM);
+    }
+
     public function getLastRun() {
         $statement = $this->conn->query(DBQueries::$lastRun);
         return $statement->fetch(PDO::FETCH_ASSOC);
@@ -103,12 +108,21 @@ class Database {
     }
 
     //Based on
-    public function changeRunStatusFromXtoY($old, $new) {
-        $statement = $this->conn->prepare(DBQueries::$changeCurrentRunStatus);
-        $statement->execute(array(":oldStatus" => $old, ":newStatus" => $new));
+    public function changeRunStateFromXtoY($old, $new) {
+        $this->conn->beginTransaction();
+
+        $lastRunLockingStatement = $this->conn->prepare(DBQueries::$lastRunLocking);
+        $lastRunLockingStatement->execute();
+        $lastRunId = $lastRunLockingStatement->fetch(PDO::FETCH_ASSOC)["run_id"];
+
+        $transitionStatement = $this->conn->prepare(DBQueries::$transitionRunState);
+        $transitionStatement->execute(array(":oldState" => $old, ":newState" => $new, ":runId" => $lastRunId));
+
+        $this->conn->commit();
+
         //Transition successful if we managed to update a row.
         //TODO Make this use SQL errors in the future?
-        return $statement->rowCount() > 0;
+        return $transitionStatement->rowCount() > 0;
     }
 }
 
