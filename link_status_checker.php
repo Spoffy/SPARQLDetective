@@ -1,5 +1,6 @@
 <?php
 
+//TODO Make this an assoc array.
 class LinkCheckResult {
     public $url;
     public $success;
