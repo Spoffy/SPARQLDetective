@@ -113,6 +113,7 @@ class Database {
 
         $lastRunLockingStatement = $this->conn->prepare(DBQueries::$lastRunLocking);
         $lastRunLockingStatement->execute();
+        //TODO Check we actually get a result back.
         $lastRunId = $lastRunLockingStatement->fetch(PDO::FETCH_ASSOC)["run_id"];
 
         $transitionStatement = $this->conn->prepare(DBQueries::$transitionRunState);

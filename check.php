@@ -15,6 +15,7 @@ $statesTransitioningToProcessing = array(
 );
 
 $database = Database::createAndConnect();
+//TODO tidy this up,
 $currentRun = $database->getLastRun();
 if(!$currentRun) {
     $database->newRun();
