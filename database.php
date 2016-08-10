@@ -38,10 +38,16 @@ ENGINE = InnoDB;
 DB;
 
     public static $insertTestData = <<< DB
-INSERT IGNORE INTO open_data.url_statuses  VALUES
+INSERT IGNORE INTO url_statuses  VALUES
 ("http://www.google.co.uk", "200", True),
 ("https://www.yahoo.co.uk", "200", True),
 ("https://data.soton.ac.uk", "404", False);
+
+INSERT IGNORE INTO urls_found (`subject`, `predicate`, `url`, `graph`, `label`) VALUES 
+('http://id.southampton.ac.uk/point-of-service/university-post-office', 'foaf:homepage', 'http://www.soton.ac.uk/bcs/postoffice/index.html', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'University Post Office'),
+('http://id.southampton.ac.uk/point-of-service/126-burgess-road', 'foaf:homepage', 'http://www.co-operative.coop', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'Co-op Food'),
+('http://id.southampton.ac.uk/point-of-service/108-burgess-road', 'foaf:homepage', 'http://www.santander.co.uk', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'Santander'),
+('http://id.southampton.ac.uk/point-of-service/106-burgess-road', 'foaf:homepage', 'http://www.barclays.co.uk', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'Barclays');
 DB;
 
     public static $insertUpdateURLStatus = <<< DB
