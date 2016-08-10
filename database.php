@@ -95,7 +95,9 @@ class Database {
 
     public function getUrls() {
         $statement = $this->conn->query(DBQueries::$getUrls);
-        return $statement->fetchAll(PDO::FETCH_NUM);
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+        //Turns rows into array of URLs.
+        return array_map(function($row) {return $row["url"];}, $rows);
     }
 
     public function getLastRun() {

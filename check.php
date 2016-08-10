@@ -27,11 +27,12 @@ if(!in_array($runState, $statesTransitioningToProcessing) || !$database->changeR
     print("Unable to begin processing, system is currently " . $runState . "\n");
     //TODO Make this return
 } else {
-    print("Successfully started processing links");
+    print("Started processing links");
 }
 
 $urlsToCheck = $database->getUrls();
 foreach($urlsToCheck as $url) {
-    print($url);
+    print($url . "\n");
 }
-//$checkedUrls = new LinkCheck($urlsToCheck);
+
+$checkedUrls = new LinkCheck($urlsToCheck);
