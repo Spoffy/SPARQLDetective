@@ -37,6 +37,8 @@ foreach($urlsToCheck as $url) {
     print($url . "\n");
 }
 
+//TODO Add some kind of batch handling to this;
+
 $linkChecker = new LinkCheck($urlsToCheck);
 foreach($linkChecker->getResults() as $result) {
     print("URL: " . $result->url . " Success: " . $result->success . " Code: " . $result->statusMessage . "\n");
