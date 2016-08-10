@@ -33,6 +33,7 @@ if(!in_array($runState, $statesTransitioningToProcessing) || !$database->changeR
 $urlsToCheck = $database->getUrls();
 
 //Implement our own checks and filters here? I suspect we'll get a lot of edge cases.
+//TODO Remove this or hide behind debugging log level
 foreach($urlsToCheck as $url) {
     print($url . "\n");
 }
