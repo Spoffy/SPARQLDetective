@@ -37,9 +37,8 @@ class LinkCheck {
         CURLE_SSL_CACERT => "Untrusted remote SSL certificate"
     );
 
-    function __construct($urls)
+    function __construct(array $urls)
     {
-        $this->handles = $this->urlsToHandles($urls);
         $this->handles = $this->urlsToHandles($urls);
         $this->multiHandle = $this->createMultiHandle($this->handles);
         $this->executeMultiHandle($this->multiHandle);
@@ -150,15 +149,17 @@ class LinkCheck {
     //Normal curl handles always return 0 (no error) when attached to the multi-handle.
     public function getResults() {
         $results = array();
-        do {
-            //Set by curl_multi_info_read
-            $remaining_messages = 0;
-            $info = curl_multi_info_read($this->multiHandle, $remaining_messages);
 
+        //Set by curl_multi_info_read
+        $remaining_messages = 0;
+        $info = curl_multi_info_read($this->multiHandle, $remaining_messages);
+        while($remaining_messages > 0) {
             $status_code = $info["result"];
             $handle = $info["handle"];
             $results[] = $this->createResult($status_code, $handle);
-        } while ($remaining_messages > 0);
+
+            $info =curl_multi_info_read($this->multiHandle, $remaining_messages);
+        };
         return $results;
     }
 
