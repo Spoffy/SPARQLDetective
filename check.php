@@ -44,3 +44,7 @@ foreach($linkChecker->getResults() as $result) {
     print("URL: " . $result->url . " Success: " . $result->success . " Code: " . $result->statusMessage . "\n");
     $database->setUrlStatus($result);
 }
+
+print("\n=========\nProcessing complete\n=========\n");
+$database->changeRunStateFromXtoY("PROCESSING", "DONE");
+$database->completeRun($currentRun["run_id"]);

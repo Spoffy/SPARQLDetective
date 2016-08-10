@@ -73,6 +73,13 @@ UPDATE open_data.system_status
 	WHERE run_id=:runId AND state=:oldState;
 DB;
 
+    public static $completeRun = <<<DB
+UPDATE system_status
+    SET state="DONE", end_time=NOW()
+    WHERE run_id=:runId;
+DB;
+
+
 }
 
 class Database {
@@ -135,7 +142,9 @@ class Database {
         $this->conn->exec(DBQueries::$newRun);
     }
 
-    //Based on
+    //Based on Compare-and-Swap.
+    //The idea being the code thinks the system is currently in state $old.
+    //By checking this, we make sure it hasn't gone into another state before we can transition to the state we want.
     public function changeRunStateFromXtoY($old, $new) {
         $this->conn->beginTransaction();
 
@@ -152,6 +161,11 @@ class Database {
         //Transition successful if we managed to update a row.
         //TODO Make this use SQL errors in the future?
         return $transitionStatement->rowCount() > 0;
+    }
+
+    public function completeRun($runId) {
+        $statement = $this->conn->prepare(DBQueries::$completeRun);
+        $statement->execute(array(":runId" => $runId));
     }
 }
 
