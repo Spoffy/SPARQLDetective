@@ -44,6 +44,13 @@ INSERT IGNORE INTO open_data.url_statuses  VALUES
 ("https://data.soton.ac.uk", "404", False);
 DB;
 
+    public static $insertUpdateURLStatus = <<< DB
+INSERT INTO url_statuses (url, status, success) VALUES
+(:url, :status, :success)
+ON DUPLICATE KEY UPDATE url=VALUES(url), status=VALUES(status), success=VALUES(success);
+DB;
+
+
     public static $listCheckedURLs = "SELECT url, status, success FROM open_data.url_statuses";
     public static $lastRun = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
     public static $newRun = "INSERT INTO open_data.system_status(start_time) VALUES (NOW())";
@@ -64,6 +71,10 @@ DB;
 
 class Database {
     public $conn;
+
+    public static function toBool($value) {
+        return (int) $value;
+    }
 
     public function connect() {
         $this->conn = new PDO("mysql:host=" . CONFIG_MYSQL_HOST . ";dbname=" . CONFIG_MYSQL_DB,
@@ -86,6 +97,15 @@ class Database {
     public function populateWithTestData() {
         $this->conn->exec(DBQueries::$insertTestData);
         return $this;
+    }
+
+    public function setUrlStatus($checkResult) {
+        $statement = $this->conn->prepare(DBQueries::$insertUpdateURLStatus);
+        $statement->execute(array(
+           ":url" => $checkResult->url,
+            ":success" => Database::toBool($checkResult->success),
+            ":status" => $checkResult->statusMessage
+        ));
     }
 
     public function getUrlStatusRows() {

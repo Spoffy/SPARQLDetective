@@ -31,8 +31,14 @@ if(!in_array($runState, $statesTransitioningToProcessing) || !$database->changeR
 }
 
 $urlsToCheck = $database->getUrls();
+
+//Implement our own checks and filters here? I suspect we'll get a lot of edge cases.
 foreach($urlsToCheck as $url) {
     print($url . "\n");
 }
 
-$checkedUrls = new LinkCheck($urlsToCheck);
+$linkChecker = new LinkCheck($urlsToCheck);
+foreach($linkChecker->getResults() as $result) {
+    print("URL: " . $result->url . " Success: " . $result->success . " Code: " . $result->statusMessage . "\n");
+    $database->setUrlStatus($result);
+}
