@@ -23,12 +23,17 @@ if(!$currentRun) {
 $currentRun = $database->getLastRun();
 $runState = $currentRun? $currentRun["state"] : null;
 
-if(!in_array($runState, $statesTransitioningToProcessing) || !$database->changeRunStateFromXtoY($runState, "PROCESSING")) {
+if(!in_array($runState, $statesTransitioningToProcessing)) {
     print("Unable to begin processing, system is currently " . $runState . "\n");
     return 1;
-} else {
-    print("Started processing links");
 }
+if(!$database->changeRunStateFromXtoY($runState, "PROCESSING")) {
+    print("Unable to begin processing, couldn't transition to state PROCESSING from $runState. Maybe another process changed the state?\n");
+    return 1;
+};
+
+print("Started processing links");
+
 
 $urlsToCheck = $database->getUrls();
 
