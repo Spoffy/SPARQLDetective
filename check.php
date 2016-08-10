@@ -25,7 +25,7 @@ $runState = $currentRun? $currentRun["state"] : null;
 
 if(!in_array($runState, $statesTransitioningToProcessing) || !$database->changeRunStateFromXtoY($runState, "PROCESSING")) {
     print("Unable to begin processing, system is currently " . $runState . "\n");
-    //TODO Make this return
+    return 1;
 } else {
     print("Started processing links");
 }
@@ -48,3 +48,5 @@ foreach($linkChecker->getResults() as $result) {
 print("\n=========\nProcessing complete\n=========\n");
 $database->changeRunStateFromXtoY("PROCESSING", "DONE");
 $database->completeRun($currentRun["run_id"]);
+
+return 0;
