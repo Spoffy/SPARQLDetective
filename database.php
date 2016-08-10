@@ -6,35 +6,33 @@ require_once("config.php");
 //TODO Make all of these constants
 class DBQueries
 {
-    public static $createDatabase = "CREATE DATABASE IF NOT EXISTS open_data";
+    //Specified below class, as 5.5 and below don't support complex initialisers.
+    public static $createDatabase;
     //TODO change schema to correctly refer to the "remainder" of the triple, as URL not always object
     public static $createTables = <<< DB
-CREATE TABLE IF NOT EXISTS `open_data`.`urls_found` ( 
+CREATE TABLE IF NOT EXISTS `urls_found` ( 
     `subject` VARCHAR(2083) NOT NULL , 
     `predicate` TEXT NOT NULL , 
     `url` TEXT NOT NULL , 
     `graph` TEXT NOT NULL , 
     `label` TEXT NULL , 
     PRIMARY KEY (`subject`)
-) 
-ENGINE = InnoDB;
+);
 
-CREATE TABLE `open_data`.`url_statuses` ( 
+CREATE TABLE `url_statuses` ( 
     `url` VARCHAR(2083) NOT NULL , 
     `status` TEXT NOT NULL , 
     `success` BOOLEAN NOT NULL , 
     PRIMARY KEY (`url`(2083))
-) 
-ENGINE = InnoDB;
+);
 
-CREATE TABLE `open_data`.`system_status` ( 
+CREATE TABLE `system_status` ( 
 `run_id` INT NOT NULL AUTO_INCREMENT , 
 `state` ENUM('DONE','PREPARING','PREPARED','PROCESSING','NOT_STARTED') NOT NULL DEFAULT 'NOT_STARTED' , 
 `start_time` DATETIME NULL , 
 `end_time` DATETIME NULL , 
 PRIMARY KEY (`run_id`)
-) 
-ENGINE = InnoDB;
+);
 DB;
 
     public static $insertTestData = <<< DB
@@ -68,7 +66,7 @@ DB;
     public static $lastRunLocking = "SELECT run_id FROM open_data.system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;";
     //Only update the old state if it hasn't changed since the program last read it.
     public static $transitionRunState = <<<DB
-UPDATE open_data.system_status 
+UPDATE system_status 
 	SET state=:newState
 	WHERE run_id=:runId AND state=:oldState;
 DB;
@@ -78,9 +76,8 @@ UPDATE system_status
     SET state="DONE", end_time=NOW()
     WHERE run_id=:runId;
 DB;
-
-
 }
+DBQueries::$createDatabase = "CREATE DATABASE IF NOT EXISTS" . CONFIG_MYSQL_DB;
 
 class Database {
     public $conn;
