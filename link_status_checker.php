@@ -149,17 +149,16 @@ class LinkCheck {
     //Normal curl handles always return 0 (no error) when attached to the multi-handle.
     public function getResults() {
         $results = array();
+        do {
+            //Set by curl_multi_info_read
+            $remaining_messages = 0;
+            $info = curl_multi_info_read($this->multiHandle, $remaining_messages);
+            if(!$info) break;
 
-        //Set by curl_multi_info_read
-        $remaining_messages = 0;
-        $info = curl_multi_info_read($this->multiHandle, $remaining_messages);
-        while($remaining_messages > 0) {
             $status_code = $info["result"];
             $handle = $info["handle"];
             $results[] = $this->createResult($status_code, $handle);
-
-            $info =curl_multi_info_read($this->multiHandle, $remaining_messages);
-        };
+        } while($remaining_messages > 0);
         return $results;
     }
 
