@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS `urls_found` (
     `url` TEXT NOT NULL , 
     `graph` TEXT NOT NULL , 
     `label` TEXT NULL , 
-    PRIMARY KEY (`subject`)
+    PRIMARY KEY (`subject`(1000))
 );
 
 CREATE TABLE `url_statuses` ( 
     `url` VARCHAR(2083) NOT NULL , 
     `status` TEXT NOT NULL , 
     `success` BOOLEAN NOT NULL , 
-    PRIMARY KEY (`url`(2083))
+    PRIMARY KEY (`url`(1000))
 );
 
 CREATE TABLE `system_status` ( 
@@ -56,8 +56,8 @@ DB;
 
 
     public static $listCheckedURLs = "SELECT url, status, success FROM open_data.url_statuses";
-    public static $lastRun = "SELECT * FROM open_data.system_status ORDER BY run_id DESC LIMIT 1";
-    public static $newRun = "INSERT INTO open_data.system_status(start_time) VALUES (NOW())";
+    public static $lastRun = "SELECT * FROM system_status ORDER BY run_id DESC LIMIT 1";
+    public static $newRun = "INSERT INTO system_status(start_time) VALUES (NOW())";
 
     public static $getUrls = "SELECT DISTINCT url FROM open_data.urls_found";
 
@@ -77,7 +77,7 @@ UPDATE system_status
     WHERE run_id=:runId;
 DB;
 }
-DBQueries::$createDatabase = "CREATE DATABASE IF NOT EXISTS" . CONFIG_MYSQL_DB;
+DBQueries::$createDatabase = "CREATE DATABASE IF NOT EXISTS `" . CONFIG_MYSQL_DB . "`;`";
 
 class Database {
     public $conn;
