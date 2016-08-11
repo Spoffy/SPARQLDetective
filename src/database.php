@@ -54,12 +54,15 @@ INSERT INTO url_statuses (url, status, success) VALUES
 ON DUPLICATE KEY UPDATE url=VALUES(url), status=VALUES(status), success=VALUES(success);
 DB;
 
+    public static $getFoundUrls = "SELECT DISTINCT url FROM open_data.urls_found";
+    public static $addFoundUrl = <<< DB
+INSERT IGNORE INTO urls_found(subject, predicate, url, graph, label) VALUES
+(:subject, :predicate, :url, :graph, :label);
+DB;
 
     public static $listCheckedURLs = "SELECT url, status, success FROM open_data.url_statuses";
     public static $lastRun = "SELECT * FROM system_status ORDER BY run_id DESC LIMIT 1";
     public static $newRun = "INSERT INTO system_status(start_time) VALUES (NOW())";
-
-    public static $getUrls = "SELECT DISTINCT url FROM open_data.urls_found";
 
     //TODO Add proper support for multiple runs.
     //This might not protect against a new run starting while the old one is running.
@@ -123,8 +126,19 @@ class Database {
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function addUrl($urlInfo) {
+        $statement = $this->conn->prepare(DBQueries::$addFoundUrl);
+        $statement->execute(array(
+            ":subject" => $urlInfo["subject"],
+            ":predicate" => $urlInfo["predicate"],
+            ":url" => $urlInfo["url"],
+            ":graph" => $urlInfo["graph"],
+            ":label" => $urlInfo["label"]
+        ));
+    }
+
     public function getUrls() {
-        $statement = $this->conn->query(DBQueries::$getUrls);
+        $statement = $this->conn->query(DBQueries::$getFoundUrls);
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
         //Turns rows into array of URLs.
         return array_map(function($row) {return $row["url"];}, $rows);

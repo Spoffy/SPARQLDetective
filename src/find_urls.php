@@ -1,5 +1,5 @@
 <?php
-require_once("../requireHelper.php");
+require_once(dirname(__DIR__) . "/requireHelper.php");
 require_once(__ROOT__ . "/src/sparqllib.php");
 
 $sparql_prefixes = array(
@@ -8,15 +8,16 @@ $sparql_prefixes = array(
 );
 
 $sparql_find_urls_query = <<<SPARQL
-SELECT DISTINCT ?subject ?graph ?url ?label WHERE {
-  GRAPH ?g {
+SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
+  GRAPH ?graph {
    ?subject foaf:homepage ?url ;
-      rdfs:label ?label ;
+            ?predicate ?url ;
+            rdfs:label ?label ;
   }
 }
 SPARQL;
 
-function find_urls() {
+function sparql_get_urls() {
     global $sparql_prefixes;
     global $sparql_find_urls_query;
 
