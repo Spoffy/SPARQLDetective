@@ -36,7 +36,7 @@ foreach($linkChecker->getResults() as $result) {
 print("\n=========\nProcessing complete\n=========\n");
 
 try {
-    $database->changeRunStateFromXtoY("PROCESSING", "DONE");
+    $stateMachine->changeStateTo("DONE");
     $database->completeRun($database->getLastRun()["run_id"]);
 } catch(Exception $e) {
     print("Unable to complete last run, received exception: " . $e->getMessage() . "\n");
