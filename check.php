@@ -1,36 +1,17 @@
 <?php
 require_once("database.php");
+require_once("state_machine.php");
 require_once("link_status_checker.php");
 
-//Transition to correct state, if not in a correct state.
-//Read list of URLs from database
-//Batch process them into status codes
-//Record status codes into Database
-//Transition out
-
-$statesTransitioningToProcessing = array(
-    "NOT_STARTED",
-    "PREPARED",
-    "DONE"
-);
-
 $database = Database::createAndConnect();
-//TODO tidy this up,
-$currentRun = $database->getLastRun();
-if(!$currentRun) {
-    $database->newRun();
-}
-$currentRun = $database->getLastRun();
-$runState = $currentRun? $currentRun["state"] : null;
+$stateMachine = new StateMachine($database);
 
-if(!in_array($runState, $statesTransitioningToProcessing)) {
-    print("Unable to begin processing, system is currently " . $runState . "\n");
+try {
+    $stateMachine->changeStateTo("PROCESSING");
+} catch(Exception $e) {
+    print("Unable to start processing links, received Exception: " . $e->getMessage() . "\n");
     return 1;
 }
-if(!$database->changeRunStateFromXtoY($runState, "PROCESSING")) {
-    print("Unable to begin processing, couldn't transition to state PROCESSING from $runState. Maybe another process changed the state?\n");
-    return 1;
-};
 
 print("Started processing links");
 
@@ -52,7 +33,13 @@ foreach($linkChecker->getResults() as $result) {
 }
 
 print("\n=========\nProcessing complete\n=========\n");
-$database->changeRunStateFromXtoY("PROCESSING", "DONE");
-$database->completeRun($currentRun["run_id"]);
+
+try {
+    $database->changeRunStateFromXtoY("PROCESSING", "DONE");
+    $database->completeRun($database->getLastRun()["run_id"]);
+} catch(Exception $e) {
+    print("Unable to complete last run, received exception: " . $e->getMessage() . "\n");
+    return 1;
+}
 
 return 0;

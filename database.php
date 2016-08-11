@@ -135,6 +135,14 @@ class Database {
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getLastRunOrCreate() {
+        $lastRun = $this->getLastRun();
+        if(!$lastRun) {
+            $this->newRun();
+        }
+        return $this->getLastRun();
+    }
+
     public function newRun() {
         $this->conn->exec(DBQueries::$newRun);
     }
