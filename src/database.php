@@ -1,5 +1,5 @@
 <?php
-require_once("requireHelper.php");
+require_once(dirname(__DIR__) . "/requireHelper.php");
 
 //Contains all the query constants.
 //This is done so we don't need "global" every time we use one.
