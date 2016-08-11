@@ -3,7 +3,6 @@
     require_once("$BASE_DIR/database.php");
 
     $database = Database::createAndConnect();
-    $database->populateWithTestData();
 
     function array2dToTableBody($data) {
         $tableHtml = "";
