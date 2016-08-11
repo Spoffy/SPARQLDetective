@@ -20,7 +20,7 @@ function find_urls() {
     global $sparql_prefixes;
     global $sparql_find_urls_query;
 
-    $db = sparql_connect(CONFIG_SPARQL_ENDPOINT);
+    $db = sparql_connect(Config::SPARQL_ENDPOINT);
     if( !$db ) {
         print($db->error()."\n");
         return;

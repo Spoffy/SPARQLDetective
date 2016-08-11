@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("requireHelper.php");
 
 //Contains all the query constants.
 //This is done so we don't need "global" every time we use one.
@@ -77,7 +77,7 @@ UPDATE system_status
     WHERE run_id=:runId;
 DB;
 }
-DBQueries::$createDatabase = "CREATE DATABASE IF NOT EXISTS `" . CONFIG_MYSQL_DB . "`;`";
+DBQueries::$createDatabase = "CREATE DATABASE IF NOT EXISTS `" . Config::MYSQL_DB . "`;`";
 
 class Database {
     public $conn;
@@ -87,9 +87,9 @@ class Database {
     }
 
     public function connect() {
-        $this->conn = new PDO("mysql:host=" . CONFIG_MYSQL_HOST . ";dbname=" . CONFIG_MYSQL_DB,
-            CONFIG_MYSQL_USERNAME,
-            CONFIG_MYSQL_PASSWORD);
+        $this->conn = new PDO("mysql:host=" . Config::MYSQL_HOST . ";dbname=" . Config::MYSQL_DB,
+            Config::MYSQL_USERNAME,
+            Config::MYSQL_PASSWORD);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->conn->exec(DBQueries::$createDatabase);
