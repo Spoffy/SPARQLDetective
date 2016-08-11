@@ -22,16 +22,31 @@ $urlsToCheck = $database->getUrls();
 //Implement our own checks and filters here? I suspect we'll get a lot of edge cases.
 //TODO Remove this or hide behind debugging log level
 foreach($urlsToCheck as $url) {
-    print($url . "\n");
+    //print($url . "\n");
 }
 
+function checkAndOutput($urls) {
+    global $database;
+
+    $linkChecker = new LinkCheck($urls);
+    foreach($linkChecker->getResults() as $result) {
+        print("URL: " . $result->url . " Success: " . $result->success . " Code: " . $result->statusMessage . "\n");
+        $database->setUrlStatus($result);
+    }
+}
+
+$batchAmount = 10;
+$batch = [];
+foreach($urlsToCheck as $url) {
+    $batch[] = $url;
+    if(count($batch) >= $batchAmount) {
+        checkAndOutput($batch);
+        $batch = [];
+    }
+}
 //TODO Add some kind of batch handling to this;
 
-$linkChecker = new LinkCheck($urlsToCheck);
-foreach($linkChecker->getResults() as $result) {
-    print("URL: " . $result->url . " Success: " . $result->success . " Code: " . $result->statusMessage . "\n");
-    $database->setUrlStatus($result);
-}
+
 
 print("\n=========\nProcessing complete\n=========\n");
 

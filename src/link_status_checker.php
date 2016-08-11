@@ -50,6 +50,7 @@ class LinkCheck {
             curl_multi_remove_handle($this->multiHandle, $handle);
             curl_close($handle);
         }
+        curl_multi_close($this->multiHandle);
     }
 
     private function createHandleForURL($url) {
