@@ -1,7 +1,8 @@
 <?php
-require_once("database.php");
-require_once("state_machine.php");
-require_once("link_status_checker.php");
+require_once("requireHelper.php");
+require_once(__ROOT__ . "/src/database.php");
+require_once(__ROOT__ . "/src/state_machine.php");
+require_once(__ROOT__ . "/src/link_status_checker.php");
 
 $database = Database::createAndConnect();
 $stateMachine = new StateMachine($database);

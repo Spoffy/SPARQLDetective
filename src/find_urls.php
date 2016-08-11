@@ -1,6 +1,6 @@
 <?php
-require_once("config.php");
-require_once("sparqllib.php");
+require_once("../requireHelper.php");
+require_once(__ROOT__ . "/src/sparqllib.php");
 
 $sparql_prefixes = array(
     "foaf" => "http://xmlns.com/foaf/0.1/",
