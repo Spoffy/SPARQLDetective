@@ -1,6 +1,6 @@
 <?php
-    $BASE_DIR = dirname(__DIR__);
-    require_once("$BASE_DIR/database.php");
+    require_once(dirname(__DIR__) . "/requireHelper.php");
+    require_once(__ROOT__ . "/src/database.php");
 
     $database = Database::createAndConnect();
 
