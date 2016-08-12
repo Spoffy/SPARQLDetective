@@ -17,12 +17,20 @@ try {
 
 print("Started retrieving links");
 
+$predicateFile = file_get_contents(Config::PREDICATE_FILE_PATH);
+$predicates = explode("\n", $predicateFile);
+//Filter out empty strings (Anything that PHP considers FALSE)
+$predicates = array_filter($predicates);
 
-$urls = sparql_get_urls("foaf:homepage");
-foreach($urls as $urlInfo) {
-    print("Adding: " . $urlInfo["url"] . "\n");
-    $database->addUrl($urlInfo);
+foreach($predicates as $predicate) {
+    $urls = sparql_get_urls($predicate);
+    foreach($urls as $urlInfo) {
+        print("Adding: " . $urlInfo["url"] . "\n");
+        $database->addUrl($urlInfo);
+    }
 }
+
+
 
 
 
