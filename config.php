@@ -7,6 +7,7 @@ class Config {
     const MYSQL_PASSWORD = "";
 
     const SPARQL_ENDPOINT = "http://sparql.data.southampton.ac.uk/";
+    const SPARQL_TIMEOUT = 20;
 
     const PREDICATE_FILE_PATH = "predicates.txt";
 }

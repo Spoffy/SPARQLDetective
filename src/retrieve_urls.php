@@ -9,24 +9,24 @@ $sparql_default_prefixes = array(
     "soton" => "http://id.southampton.ac.uk/ns/"
 );
 
-function sparql_run_query_fetch_all($query, $extra_prefixes=[]) {
-    global $sparql_prefixes;
+const SPARQL_DEFAULT_TIMEOUT = 20;
 
-    $db = sparql_connect(Config::SPARQL_ENDPOINT);
-    if( !$db ) {
-        print($db->error()."\n");
+function sparql_run_query_fetch_all($query, $extra_prefixes=[]) {
+    $sparql_connection = sparql_connect(Config::SPARQL_ENDPOINT);
+    if( !$sparql_connection ) {
+        print($sparql_connection->error()."\n");
         return;
     }
 
     global $sparql_default_prefixes;
     $prefixes = array_merge($sparql_default_prefixes, $extra_prefixes);
     foreach($prefixes as $prefix => $url) {
-        $db->ns($prefix, $url);
+        $sparql_connection->ns($prefix, $url);
     }
 
-    $result = $db->query($query);
+    $result = $sparql_connection->query($query, Config::SPARQL_TIMEOUT);
     if(!$result) {
-        print($db->error()."\n");
+        print($sparql_connection->error()."\n");
         return;
     }
 
