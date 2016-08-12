@@ -4,6 +4,8 @@ require_once(__ROOT__ . "/src/database.php");
 require_once(__ROOT__ . "/src/state_machine.php");
 require_once(__ROOT__ . "/src/link_status_checker.php");
 
+//TODO Add option to resume from where it left off.
+
 $database = Database::createAndConnect();
 $stateMachine = new StateMachine($database);
 
