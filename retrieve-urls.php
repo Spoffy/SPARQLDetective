@@ -34,6 +34,8 @@ foreach($predicates as $predicate) {
         print("Error: Invalid SPARQL result, aborting.");
         return 1;
     }
+
+    //TODO Clear the existing database before repopulating, or delete old entries.
     foreach($results as $urlInfo) {
         print("Adding: " . $urlInfo["url"] . "\n");
         $database->addUrl($urlInfo);
