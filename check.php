@@ -31,6 +31,7 @@ function checkAndOutput($urls) {
     }
 }
 
+$amountProcessed = 0;
 $batchAmount = 10;
 $batch = [];
 foreach($urlsToCheck as $url) {
@@ -38,6 +39,8 @@ foreach($urlsToCheck as $url) {
     if(count($batch) >= $batchAmount) {
         checkAndOutput($batch);
         $batch = [];
+        $amountProcessed += $batchAmount;
+        $database->updateAmountProcessed($amountProcessed);
     }
 }
 

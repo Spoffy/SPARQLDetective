@@ -19,18 +19,19 @@ CREATE TABLE IF NOT EXISTS `urls_found` (
     PRIMARY KEY (`subject`(1000))
 );
 
-CREATE TABLE `url_statuses` ( 
+CREATE TABLE IF NOT EXISTS `url_statuses` ( 
     `url` VARCHAR(2083) NOT NULL , 
     `status` TEXT NOT NULL , 
     `success` BOOLEAN NOT NULL , 
     PRIMARY KEY (`url`(1000))
 );
 
-CREATE TABLE `system_status` ( 
+CREATE TABLE IF NOT EXISTS `system_status` ( 
 `run_id` INT NOT NULL AUTO_INCREMENT , 
 `state` ENUM('DONE','PREPARING','PREPARED','PROCESSING','NOT_STARTED') NOT NULL DEFAULT 'NOT_STARTED' , 
 `start_time` DATETIME NULL , 
-`end_time` DATETIME NULL , 
+`end_time` DATETIME NULL ,
+ `amount_processed` INT NOT NULL DEFAULT 0,
 PRIMARY KEY (`run_id`)
 );
 DB;
@@ -63,6 +64,8 @@ DB;
     public static $listCheckedURLs = "SELECT url, status, success FROM open_data.url_statuses";
     public static $lastRun = "SELECT * FROM system_status ORDER BY run_id DESC LIMIT 1";
     public static $newRun = "INSERT INTO system_status(start_time) VALUES (NOW())";
+
+    public static $updateAmountProcessed = "UPDATE system_status SET amount_processed=:amount WHERE run_id=:run_id;";
 
     //TODO Add proper support for multiple runs.
     //This might not protect against a new run starting while the old one is running.
@@ -159,6 +162,15 @@ class Database {
 
     public function newRun() {
         $this->conn->exec(DBQueries::$newRun);
+    }
+
+    public function updateAmountProcessed($value) {
+        $runId = $this->getLastRun()["run_id"];
+        $statement = $this->conn->prepare(DBQueries::$updateAmountProcessed);
+        $statement->execute(array(
+            ":amount" => $value,
+            ":run_id" => $runId
+        ));
     }
 
     //Based on Compare-and-Swap.
