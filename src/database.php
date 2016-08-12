@@ -115,9 +115,9 @@ class Database {
     public function setUrlStatus($checkResult) {
         $statement = $this->conn->prepare(DBQueries::$insertUpdateURLStatus);
         $statement->execute(array(
-           ":url" => $checkResult->url,
-            ":success" => Database::toBool($checkResult->success),
-            ":status" => $checkResult->statusMessage
+           ":url" => $checkResult["url"],
+            ":success" => Database::toBool($checkResult["success"]),
+            ":status" => $checkResult["statusMessage"]
         ));
     }
 

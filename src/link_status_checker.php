@@ -1,19 +1,5 @@
 <?php
 
-//TODO Make this an assoc array.
-class LinkCheckResult {
-    public $url;
-    public $success;
-    public $statusMessage;
-
-    public function __construct($url, $success, $statusMessage)
-    {
-        $this->url = $url;
-        $this->success = $success;
-        $this->statusMessage = $statusMessage;
-    }
-}
-
 //This exists purely so we can use RAII to prevent cURL handles from leaking
 //Can't use try .. finally as we need to support PHP 5.2.
 class LinkCheck {
@@ -141,9 +127,13 @@ class LinkCheck {
         $url = $this->handleToURL($handle);
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $success = $this->wasRequestSuccessful($statusCode, $httpCode);
-        $status_message = $this->codeToStatusMessage($statusCode, $httpCode);
-
-        return new LinkCheckResult($url, $success, $status_message);
+        $statusMessage = $this->codeToStatusMessage($statusCode, $httpCode);
+        
+        return array(
+            "url" => $url,
+            "success" => $success,
+            "statusMessage" => $statusMessage
+        );
     }
 
     //We need to use curl_multi_info_read for error codes
