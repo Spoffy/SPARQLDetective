@@ -1,1 +1,3 @@
 foaf:homepage
+foaf:page
+soton:disabledGoPage
