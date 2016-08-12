@@ -40,8 +40,6 @@ foreach($urlsToCheck as $url) {
         $batch = [];
     }
 }
-//TODO Add some kind of batch handling to this;
-
 
 
 print("\n=========\nProcessing complete\n=========\n");
