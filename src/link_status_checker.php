@@ -2,6 +2,7 @@
 
 //This exists purely so we can use RAII to prevent cURL handles from leaking
 //Can't use try .. finally as we need to support PHP 5.2.
+//TODO Make this use a rolling-window, so it doesn't busy wait on slow requests.
 class LinkCheck {
     //These should only be written to or removed from in Constructor and destructor.
     //Accessing their contents is fine.
