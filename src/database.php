@@ -74,13 +74,13 @@ DB;
     public static $transitionRunState = <<<DB
 UPDATE system_status 
 	SET state=:newState
-	WHERE run_id=:runId AND state=:oldState;
+	WHERE run_id=:run_id AND state=:oldState;
 DB;
 
     public static $completeRun = <<<DB
 UPDATE system_status
     SET state="DONE", end_time=NOW()
-    WHERE run_id=:runId;
+    WHERE run_id=:run_id;
 DB;
 }
 DBQueries::$createDatabase = "CREATE DATABASE IF NOT EXISTS `" . Config::MYSQL_DB . "`;`";
@@ -185,7 +185,7 @@ class Database {
         $lastRunId = $lastRunLockingStatement->fetch(PDO::FETCH_ASSOC)["run_id"];
 
         $transitionStatement = $this->conn->prepare(DBQueries::$transitionRunState);
-        $transitionStatement->execute(array(":oldState" => $old, ":newState" => $new, ":runId" => $lastRunId));
+        $transitionStatement->execute(array(":oldState" => $old, ":newState" => $new, ":run_id" => $lastRunId));
 
         $this->conn->commit();
 
@@ -196,7 +196,7 @@ class Database {
 
     public function completeRun($runId) {
         $statement = $this->conn->prepare(DBQueries::$completeRun);
-        $statement->execute(array(":runId" => $runId));
+        $statement->execute(array(":run_id" => $runId));
     }
 }
 
