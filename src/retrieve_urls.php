@@ -2,14 +2,13 @@
 require_once(dirname(__DIR__) . "/requireHelper.php");
 require_once(__ROOT__ . "/src/sparqllib.php");
 
-$sparql_prefixes = array(
+//TODO Tidy up this whole file.
+$sparql_default_prefixes = array(
     "foaf" => "http://xmlns.com/foaf/0.1/",
     "rdfs" => "http://www.w3.org/2000/01/rdf-schema#"
 );
 
-
-
-function sparql_run_query_fetch_all($query) {
+function sparql_run_query_fetch_all($query, $extra_prefixes=[]) {
     global $sparql_prefixes;
 
     $db = sparql_connect(Config::SPARQL_ENDPOINT);
@@ -18,7 +17,9 @@ function sparql_run_query_fetch_all($query) {
         return;
     }
 
-    foreach($sparql_prefixes as $prefix => $url) {
+    global $sparql_default_prefixes;
+    $prefixes = array_merge($sparql_default_prefixes, $extra_prefixes);
+    foreach($prefixes as $prefix => $url) {
         $db->ns($prefix, $url);
     }
 
@@ -32,7 +33,7 @@ function sparql_run_query_fetch_all($query) {
 
 }
 
-function sparql_get_urls($predicate) {
+function sparql_get_urls($predicate, $extra_prefixes=[]) {
     $find_urls_query = <<<SPARQL
 SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
    GRAPH ?graph {
@@ -43,5 +44,5 @@ SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
 }
 SPARQL;
 
-    return sparql_run_query_fetch_all($find_urls_query);
+    return sparql_run_query_fetch_all($find_urls_query, $extra_prefixes);
 }
