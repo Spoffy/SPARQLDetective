@@ -18,9 +18,9 @@ try {
 print("Started retrieving links");
 
 
-$urls = sparql_get_urls();
+$urls = sparql_get_urls("foaf:homepage");
 foreach($urls as $urlInfo) {
-    print("Adding: " . $urlInfo["url"]);
+    print("Adding: " . $urlInfo["url"] . "\n");
     $database->addUrl($urlInfo);
 }
 

@@ -7,19 +7,10 @@ $sparql_prefixes = array(
     "rdfs" => "http://www.w3.org/2000/01/rdf-schema#"
 );
 
-$sparql_find_urls_query = <<<SPARQL
-SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
-  GRAPH ?graph {
-   ?subject foaf:homepage ?url ;
-            ?predicate ?url ;
-            rdfs:label ?label ;
-  }
-}
-SPARQL;
 
-function sparql_get_urls() {
+
+function sparql_run_query_fetch_all($query) {
     global $sparql_prefixes;
-    global $sparql_find_urls_query;
 
     $db = sparql_connect(Config::SPARQL_ENDPOINT);
     if( !$db ) {
@@ -31,11 +22,26 @@ function sparql_get_urls() {
         $db->ns($prefix, $url);
     }
 
-    $result = $db->query($sparql_find_urls_query);
+    $result = $db->query($query);
     if(!$result) {
         print($db->error()."\n");
         return;
     }
 
     return $result->fetch_all();
+
+}
+
+function sparql_get_urls($predicate) {
+    $find_urls_query = <<<SPARQL
+SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
+   GRAPH ?graph {
+   ?subject $predicate ?url ;
+            ?predicate ?url ;
+            rdfs:label ?label ;
+  }
+}
+SPARQL;
+
+    return sparql_run_query_fetch_all($find_urls_query);
 }
