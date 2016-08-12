@@ -55,7 +55,7 @@ INSERT INTO url_statuses (url, status, success) VALUES
 ON DUPLICATE KEY UPDATE url=VALUES(url), status=VALUES(status), success=VALUES(success);
 DB;
 
-    public static $getFoundUrls = "SELECT DISTINCT url FROM open_data.urls_found";
+    public static $getFoundUrlsWithOffset = "SELECT DISTINCT url FROM open_data.urls_found LIMIT :starting_offset, 4294967296";
     public static $addFoundUrl = <<< DB
 INSERT IGNORE INTO urls_found(subject, predicate, url, graph, label) VALUES
 (:subject, :predicate, :url, :graph, :label);
@@ -140,11 +140,17 @@ class Database {
         ));
     }
 
-    public function getUrls() {
-        $statement = $this->conn->query(DBQueries::$getFoundUrls);
+    public function getUrlsWithStartingOffset($offset) {
+        $statement = $this->conn->prepare(DBQueries::$getFoundUrlsWithOffset);
+        $statement->bindValue(":starting_offset", $offset, PDO::PARAM_INT);
+        $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
         //Turns rows into array of URLs.
         return array_map(function($row) {return $row["url"];}, $rows);
+    }
+
+    public function getUrls() {
+        return $this->getUrlsWithStartingOffset(0);
     }
 
     public function getLastRun() {
