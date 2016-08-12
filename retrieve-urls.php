@@ -7,10 +7,11 @@ require_once(__ROOT__ . "/src/retrieve_urls.php");
 
 
 $database = Database::createAndConnect();
-$stateMachine = new StateMachine($database);
 
+//Functions as a lock, no other instance of check or retrieve-urls can run on the same database while we're running.
+$systemController = new StateMachine($database);
 try {
-    $stateMachine->changeStateTo("PREPARING");
+    $systemController->changeStateTo("PREPARING");
 } catch(Exception $e) {
     print("Unable to start retrieving links, received Exception: " . $e->getMessage() . "\n");
     return 1;
@@ -18,15 +19,22 @@ try {
 
 print("Started retrieving links");
 
-$predicateFile = file_get_contents(Config::PREDICATE_FILE_PATH);
-$predicates = explode("\n", $predicateFile);
-//Filter out empty strings (Anything that PHP considers FALSE)
-$predicates = array_filter($predicates);
+//Reads in list of newline-seperated predicates and returns them as an array.
+function parsePredicates($predicateFilePath) {
+    $fileContents = file_get_contents($predicateFilePath);
+    //Split into rows, filter any blank rows.
+    return array_filter(explode("\n", $fileContents));
+}
+
+$predicates = parsePredicates(Config::PREDICATE_FILE_PATH);
 
 foreach($predicates as $predicate) {
-    $urls = sparql_get_urls($predicate);
-    //TODO Validate return value of get_urls
-    foreach($urls as $urlInfo) {
+    $results = sparql_get_urls_for_predicate($predicate);
+    if(!$results) {
+        print("Error: Invalid SPARQL result, aborting.");
+        return 1;
+    }
+    foreach($results as $urlInfo) {
         print("Adding: " . $urlInfo["url"] . "\n");
         $database->addUrl($urlInfo);
     }
@@ -35,7 +43,7 @@ foreach($predicates as $predicate) {
 print("\n=========\nProcessing complete\n=========\n");
 
 try {
-    $stateMachine->changeStateTo("DONE");
+    $systemController->changeStateTo("DONE");
     $database->completeRun($database->getLastRun()["run_id"]);
 } catch(Exception $e) {
     print("Unable to complete last run, received exception: " . $e->getMessage() . "\n");

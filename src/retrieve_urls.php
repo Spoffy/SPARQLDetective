@@ -34,7 +34,7 @@ function sparql_run_query_fetch_all($query, $extra_prefixes=[]) {
 
 }
 
-function sparql_get_urls($predicate, $extra_prefixes=[]) {
+function sparql_get_urls_for_predicate($predicate, $extra_prefixes=[]) {
     $find_urls_query = <<<SPARQL
 SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
    GRAPH ?graph {
