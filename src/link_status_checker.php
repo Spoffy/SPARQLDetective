@@ -53,6 +53,9 @@ class LinkCheck {
         //Do we care about SSL certificates when checking a link is broken?
         //...Possibly if there's SSL errors. V2.
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        //TODO Make this not a magic constant.
+        curl_setopt($curlHandle, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT, 10);
         return $curlHandle;
     }
 
