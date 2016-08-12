@@ -5,7 +5,8 @@ require_once(__ROOT__ . "/src/sparqllib.php");
 //TODO Tidy up this whole file.
 $sparql_default_prefixes = array(
     "foaf" => "http://xmlns.com/foaf/0.1/",
-    "rdfs" => "http://www.w3.org/2000/01/rdf-schema#"
+    "rdfs" => "http://www.w3.org/2000/01/rdf-schema#",
+    "soton" => "http://id.southampton.ac.uk/ns/"
 );
 
 function sparql_run_query_fetch_all($query, $extra_prefixes=[]) {

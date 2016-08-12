@@ -5,6 +5,7 @@ require_once(__ROOT__ . "/src/database.php");
 require_once(__ROOT__ . "/src/state_machine.php");
 require_once(__ROOT__ . "/src/retrieve_urls.php");
 
+
 $database = Database::createAndConnect();
 $stateMachine = new StateMachine($database);
 
@@ -24,15 +25,12 @@ $predicates = array_filter($predicates);
 
 foreach($predicates as $predicate) {
     $urls = sparql_get_urls($predicate);
+    //TODO Validate return value of get_urls
     foreach($urls as $urlInfo) {
         print("Adding: " . $urlInfo["url"] . "\n");
         $database->addUrl($urlInfo);
     }
 }
-
-
-
-
 
 print("\n=========\nProcessing complete\n=========\n");
 
