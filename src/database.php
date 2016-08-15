@@ -142,7 +142,7 @@ class Database {
 
     public function getUrlsWithStartingOffset($offset) {
         $statement = $this->conn->prepare(DBQueries::$getFoundUrlsWithOffset);
-        $statement->bindValue(":starting_offset", $offset, PDO::PARAM_INT);
+        $statement->bindValue(":starting_offset", (int)$offset, PDO::PARAM_INT);
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
         //Turns rows into array of URLs.
@@ -151,6 +151,10 @@ class Database {
 
     public function getUrls() {
         return $this->getUrlsWithStartingOffset(0);
+    }
+
+    public function getAmountProcessed() {
+        return $this->getLastRun()["amount_processed"];
     }
 
     public function getLastRun() {

@@ -5,22 +5,35 @@ require_once(__ROOT__ . "/src/state_machine.php");
 require_once(__ROOT__ . "/src/link_status_checker.php");
 
 //TODO Add KLogger rather than using print for debugging messages.
-//TODO Add option to resume from where it left off.
+
+$options = getopt("r", array("resume"));
+$option_resume = key_exists("r", $options) || key_exists("resume", $options);
 
 $database = Database::createAndConnect();
 $stateMachine = new StateMachine($database);
 
-try {
-    $stateMachine->changeStateTo("PROCESSING");
-} catch(Exception $e) {
-    print("Unable to start processing links, received Exception: " . $e->getMessage() . "\n");
-    return 1;
+$start_offset = 0;
+if($option_resume) {
+    if($stateMachine->getCurrentState() == "PROCESSING") {
+        $start_offset = $database->getAmountProcessed();
+    } else {
+        print("Unable to resume, the system wasn't interrupted or has started doing something else.");
+        return 1;
+    }
+} else {
+    try {
+        $stateMachine->changeStateTo("PROCESSING");
+    } catch(Exception $e) {
+        print("Unable to start processing links, received Exception: " . $e->getMessage() . "\n");
+        return 1;
+    }
 }
+
 
 print("Started processing links");
 
 
-$urlsToCheck = $database->getUrls();
+$urlsToCheck = $database->getUrlsWithStartingOffset($start_offset);
 
 //Implement our own checks and filters here? I suspect we'll get a lot of edge cases.
 
@@ -34,7 +47,7 @@ function checkAndOutput($urls) {
     }
 }
 
-$amountProcessed = 0;
+$amountProcessed = $start_offset;
 $batchAmount = 10;
 $batch = [];
 foreach($urlsToCheck as $url) {
