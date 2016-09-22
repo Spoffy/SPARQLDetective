@@ -19,10 +19,39 @@ Download/checkout the repository. That's it! Scripts are runnable from the top l
 
 ## Configuration
 
-"""
+Config takes places in the files "config.php" and "predicates.txt"
+
+### config.php
+```
+class Config {
+    //The address of the MySQL host, excluding port. There's currently no configuration option for port.
+    const MYSQL_HOST = "localhost";
+    //The database in the MySQL server to be used. This must already exist.
+    const MYSQL_DB = "open_data";
+    const MYSQL_USERNAME = "root";
+    const MYSQL_PASSWORD = "";
+
+    //The address of the SPARQL endpoint for the Open Data provider of choice
+    const SPARQL_ENDPOINT = "http://sparql.data.southampton.ac.uk/";
+    //How long to wait for the SPARQL query to complete before aborting.
+    const SPARQL_TIMEOUT = 20;
+
+    //Path to the list of predicates
+    const PREDICATE_FILE_PATH = "predicates.txt";
+}
+```
+
+### predicates.txt
+
+A newline seperated list of predicates, using whatever line endings are suitable for the platform.
+
+Example:
+```
+foaf:homepage
+foaf:page
+soton:disabledGoPage
+```
 
 
-
-"""
 
 
