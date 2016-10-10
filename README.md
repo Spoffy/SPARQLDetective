@@ -19,7 +19,12 @@ Download/checkout the repository. That's it! Scripts are runnable from the top l
 
 ## Configuration
 
-Config takes places in the files "config.php" and "predicates.txt"
+Config takes places in the files "config.php" and "predicates.txt". Example files are included. Start by copying the example configuration and setting the values you need.
+
+```
+mv config.php.example config.php
+mv predicates.txt.example predicates.php
+```
 
 ### config.php
 ```
