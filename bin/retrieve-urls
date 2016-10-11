@@ -53,11 +53,11 @@ foreach($predicates as $predicate) {
 
     $done = array();
     foreach($results as $urlInfo) {
-        $code = $urlInfo["graph"]." ".$urlInfo["subject"]." ".$urlInfo["predicate"]." ".$urlInfo["url"];
+        $code = $urlInfo["graph"]." ".$urlInfo["subject"]." $predicate ".$urlInfo["url"];
         if( array_key_exists( $code, $done ) ) { continue; }
         $done[$code] = true;
         $urlInfo["predicate"] = $predicate;
-        if( $urlInfo["labelinGraph"] ) { 
+        if( $urlInfo["labelInGraph"] ) { 
             $urlInfo["label"] = $urlInfo["labelinGraph"];
         } elseif( $urlInfo["anyOldLabel"] ) { 
             $urlInfo["label"] = $urlInfo["anyOldLabel"];
