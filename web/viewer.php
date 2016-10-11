@@ -43,6 +43,7 @@
       <tbody>
 <?php
         foreach($url_status_rows as $row) {
+print_r( $row );
             print "<tr>";
             print "<td><a href='".htmlspecialchars($row[0])."'>".htmlspecialchars($row[0])."</a></td>";
             print "<td>";
