@@ -1,5 +1,8 @@
+#!/usr/bin/env php -q
 <?php
-require_once("requireHelper.php");
+define("__ROOT__", dirname(__dir__));
+
+require_once(__ROOT__ . "/src/requireHelper.php");
 require_once(__ROOT__ . "/src/database.php");
 require_once(__ROOT__ . "/src/state_machine.php");
 require_once(__ROOT__ . "/src/link_status_checker.php");

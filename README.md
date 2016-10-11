@@ -19,14 +19,15 @@ Download/checkout the repository. That's it! Scripts are runnable from the top l
 
 ## Configuration
 
-Config takes places in the files "config.php" and "predicates.txt". Example files are included. Start by copying the example configuration and setting the values you need.
+Config takes places in the files in /etc/ called "config.php", "namespaces.txt" and "predicates.txt". Example files are included. Start by copying the example configuration and setting the values you need.
 
 ```
-mv config.php.example config.php
-mv predicates.txt.example predicates.php
+cp etc/config.php.example etc/config.php
+cp etc/predicates.txt.example etc/predicates.php
+cp etc/predicates.txt.example etc/predicates.php
 ```
 
-### config.php
+### etc/config.php
 ```
 class Config {
     //The address of the MySQL host, excluding port. There's currently no configuration option for port.
@@ -41,8 +42,9 @@ class Config {
     //How long to wait for the SPARQL query to complete before aborting.
     const SPARQL_TIMEOUT = 20;
 
-    //Path to the list of predicates
-    const PREDICATE_FILE_PATH = "predicates.txt";
+    //Path to the list of predicates and namespaces relative to the root of the software
+    const NAMESPACE_FILE_PATH = "etc/namespaces.txt";
+    const PREDICATE_FILE_PATH = "etc/predicates.txt";
 }
 ```
 
