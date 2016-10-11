@@ -58,9 +58,11 @@ foreach($predicates as $predicate) {
         $done[$code] = true;
         $urlInfo["predicate"] = $predicate;
         if( isset($urlInfo["labelInSameGraph"]) ) { 
-            $urlInfo["label"] = $urlInfo["labelInGraph"];
+            $urlInfo["label"] = $urlInfo["labelInSameGraph"];
         } elseif( isset($urlInfo["anyOldLabel"]) ) { 
             $urlInfo["label"] = $urlInfo["anyOldLabel"];
+        } else {
+            $urlInfo["label"] = "NO LABEL";
         }
 
         print("Adding: " . $urlInfo["url"] . "\n");
