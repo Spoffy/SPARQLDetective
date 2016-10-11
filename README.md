@@ -9,13 +9,21 @@ A command line script that analyses a SPARQL endpoint to detect erroneous links.
 PHP 5.3+ (Untested on lower)
 php_curl (Unfortunately)
 php_pdo_mysql
+jquery.tablesorter (for web interface)
 ```
 
 Requires an active MySQL deployment.
 
 ## Installation
 
-Download/checkout the repository. That's it! Scripts are runnable from the top level directory.
+Download/checkout the repository. That's it! Scripts are in the bin directory.
+
+If checking out from git, use the following to get tablesorter:
+
+```
+git submodules init
+git submodules update
+```
 
 ## Configuration
 

@@ -1,0 +1,3 @@
+[submodule "web/tablesorter"]
+	path = web/tablesorter
+	url = https://github.com/christianbach/tablesorter
