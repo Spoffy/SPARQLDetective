@@ -1,5 +1,6 @@
 <?php
-    require_once(dirname(__DIR__) . "/src/requireHelper.php");
+    define("__ROOT__", dirname(__dir__));
+    require_once(__ROOT__ . "/src/requireHelper.php");
     require_once(__ROOT__ . "/src/database.php");
 
     $database = Database::createAndConnect();
@@ -27,7 +28,10 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>URL Checker Results View</title>
-    <link rel="stylesheet" type="text/css" href="viewer.css" media="all" /
+    <script rel="stylesheet" type="text/css" media="all">
+      <?php include( __ROOT__."/web/viewer.css" ); ?>
+    </script>
+
 </head>
 <body>
 <table class="results">
