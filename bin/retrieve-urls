@@ -60,7 +60,8 @@ print("\n=========\nProcessing complete\n=========\n");
 
 try {
     $systemController->changeStateTo("DONE");
-    $database->completeRun($database->getLastRun()["run_id"]);
+    $lastRun = $database->getLastRun();
+    $database->completeRun($lastRun["run_id"]);
 } catch(Exception $e) {
     print("Unable to complete last run, received exception: " . $e->getMessage() . "\n");
     return 1;
