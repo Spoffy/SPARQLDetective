@@ -25,7 +25,10 @@
   <body>
     <table class="tablesorter">
       <thead>
-        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr>
+          <th>Parameter</th>
+          <th>Value</th>
+        </tr>
       </thead>
       <tbody>
 <?php
@@ -38,7 +41,15 @@
 
     <table class="tablesorter">
       <thead>
-        <tr><th>URL</th><th>Return</th><th>Success</th></tr>
+        <tr>
+          <th>URL</th>
+          <th>Return</th>
+          <th>Success</th>
+          <th>Label</th>
+          <th>Graph</th>
+          <th>Subject</th>
+          <th>Predicate</th>
+        </tr>
       </thead>
       <tbody>
 <?php
