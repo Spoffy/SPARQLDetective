@@ -8,6 +8,7 @@ function sparql_run_query_fetch_all($query, $namespaces=array()) {
         print($sparql_connection->error()."\n");
         return;
     }
+$sparql_connection->debug = true;
 
     foreach($namespaces as $prefix => $url) {
         $sparql_connection->ns($prefix, $url);
