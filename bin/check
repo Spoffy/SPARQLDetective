@@ -45,7 +45,7 @@ function checkAndOutput($urls) {
 
     $linkChecker = new LinkCheck($urls);
     foreach($linkChecker->getResults() as $result) {
-        print("URL: " . $result["url"] . " Success: " . $result["success"] . " Code: " . $result["statusMessage"] . "\n");
+        print("URL: " . $result["url"] . " - Result: " . $result["success"] . " Code: " . $result["statusMessage"] . "\n");
         $database->setUrlStatus($result);
     }
 }

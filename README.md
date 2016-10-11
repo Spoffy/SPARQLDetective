@@ -68,3 +68,7 @@ foaf http://xmlns.com/foaf/0.1/
 rdfs http://www.w3.org/2000/01/rdf-schema#
 soton http://id.southampton.ac.uk/ns/
 ```
+
+## Running SPARQL Detetive
+
+The system works in two passes. The first is ``bin/retrieve-urls`` which builds up a todo list of URLs to check from the SPARQL endpoint. The second phase is ``bin/check`` which does the actual checks. If check is stopped, it can be restarted from where it was. If you want to reset when check has not completed, use ``bin/transition-to-done``.

@@ -118,7 +118,8 @@ class LinkCheck {
             if(key_exists($statusCode, LinkCheck::$cURLErrorCodeToMessage)) {
                 $statusMessage = LinkCheck::$cURLErrorCodeToMessage[$statusCode];
             } else {
-                $statusMessage = curl_strerror($statusCode);
+                //$statusMessage = curl_strerror($statusCode); // 5.5.0 or later
+                $statusMessage = "CURL ERROR $statusCode"; // 5.5.0 or later
             }
         }
         return $statusMessage;
