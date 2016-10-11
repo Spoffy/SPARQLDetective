@@ -50,15 +50,21 @@ class Config {
 
 ### predicates.txt
 
-A newline seperated list of predicates, using whatever line endings are suitable for the platform.
+A newline seperated list of predicates, using whatever line endings are suitable for the platform. Raw predicates without a namespace listed, should be wrapped in angle brackets.
 
 Example:
 ```
 foaf:homepage
 foaf:page
 soton:disabledGoPage
+<http://my.namespace.org/page>
 ```
 
+### namesapces.txt
 
-
-
+Example:
+```
+foaf http://xmlns.com/foaf/0.1/
+rdfs http://www.w3.org/2000/01/rdf-schema#
+soton http://id.southampton.ac.uk/ns/
+```

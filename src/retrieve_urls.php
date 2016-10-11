@@ -29,7 +29,7 @@ SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
    GRAPH ?graph {
    ?subject $predicate ?url ;
             ?predicate ?url ;
-            rdfs:label ?label ;
+            rdfs:label ?label .
   }
 }
 SPARQL;
