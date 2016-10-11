@@ -5,9 +5,9 @@
 
     $database = Database::createAndConnect();
 
-    $lastRun = $this->getLastRun();
+    $lastRun = $database->getLastRun();
+    $lastRun["SPARQL Endpoint"] = Config::SPARQL_ENDPOINT;
     $url_status_rows = $database->getUrlStatusRows();
-    $url_status_content = array2dToTableBody($url_status_rows);
 ?>
 <!DOCTYPE html>
 <html>
