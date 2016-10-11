@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__DIR__) . "/requireHelper.php");
+require_once(__ROOT__ . "/src/requireHelper.php");
 require_once(__ROOT__ . "/src/sparqllib.php");
 
 function sparql_run_query_fetch_all($query, $namespaces=array()) {
