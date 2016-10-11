@@ -49,12 +49,12 @@ function checkAndOutput($urls) {
 
 $amountProcessed = $start_offset;
 $batchAmount = 10;
-$batch = [];
+$batch = array();
 foreach($urlsToCheck as $url) {
     $batch[] = $url;
     if(count($batch) >= $batchAmount) {
         checkAndOutput($batch);
-        $batch = [];
+        $batch = array();
         $amountProcessed += $batchAmount;
         $database->updateAmountProcessed($amountProcessed);
     }

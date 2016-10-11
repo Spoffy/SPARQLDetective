@@ -20,13 +20,25 @@ try {
 print("Started retrieving links");
 
 //Reads in list of newline-seperated predicates and returns them as an array.
-function parsePredicates($predicateFilePath) {
-    $fileContents = file_get_contents($predicateFilePath);
+function parsePredicates($filePath) {
+    $fileContents = file_get_contents($filePath);
     //Split into rows, filter any blank rows.
     return array_filter(explode("\n", $fileContents));
 }
 
+// Each line contains namesspace<whitespace>prefix
+function parseNamespaces($filePath) {
+    $fileContents = file($filePath);
+    $namespaces = array();
+    foreach( $fileContents as $line ) {
+        list( $ns, $prefix ) = preg_split( "/\s+/", trim($line) );
+        $namespaces[$ns]=$prefix;
+    }
+    return $namespaces;
+}
+
 $predicates = parsePredicates(Config::PREDICATE_FILE_PATH);
+$namespaces = parseNamespaces(Config::NAMESPACE_FILE_PATH);
 
 foreach($predicates as $predicate) {
     $results = sparql_get_urls_for_predicate($predicate);

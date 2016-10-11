@@ -12,4 +12,5 @@ class Config {
     const SPARQL_TIMEOUT = 20;
 
     const PREDICATE_FILE_PATH = "predicates.txt";
+    const NAMESPACE_FILE_PATH = "namespaces.txt";
 }

@@ -1,5 +1,5 @@
-SPARQLink
-=========
+SPARQL Detective
+================
 
 A command line script that analyses a SPARQL endpoint to detect erroneous links. Populates a MySQL databases with a full list of links found, as well as the status of each link. Capable of generating a simple webpage displaying the status of each link.
 
