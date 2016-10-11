@@ -26,12 +26,12 @@ $sparql_connection->debug = true;
 
 function sparql_get_urls_for_predicate($predicate, $extra_prefixes=array()) {
     $find_urls_query = <<<SPARQL
-SELECT DISTINCT ?subject ?predicate ?url ?graph ?label WHERE {
-   GRAPH ?graph {
-   ?subject $predicate ?url ;
-            ?predicate ?url ;
-            rdfs:label ?label .
+SELECT DISTINCT ?subject ?url ?graph ?labelInSameGraph ?anyOldLabel WHERE {
+  GRAPH ?graph {
+    ?subject $predicate ?url ;
+    OPTIONAL { rdfs:label ?labelInSameGraph } .
   }
+  OPTIONAL { ?subject rdfs:label ?anyOldLabel }
 }
 SPARQL;
 

@@ -50,7 +50,19 @@ foreach($predicates as $predicate) {
     }
 
     //TODO Clear the existing database before repopulating, or delete old entries.
+
+    $done = array();
     foreach($results as $urlInfo) {
+        $code = $urlInfo["graph"]." ".$urlInfo["subject"]." ".$urlInfo["predicate"]." ".$urlInfo["url"];
+        if( array_key_exists( $code, $done ) ) { continue; }
+        $done[$code] = true;
+        $urlInfo["predicate"] = $predicate;
+        if( $urlInfo["labelinGraph"] ) { 
+            $urlInfo["label"] = $urlInfo["labelinGraph"];
+        } elseif( $urlInfo["anyOldLabel"] ) { 
+            $urlInfo["label"] = $urlInfo["anyOldLabel"];
+        }
+
         print("Adding: " . $urlInfo["url"] . "\n");
         $database->addUrl($urlInfo);
     }
