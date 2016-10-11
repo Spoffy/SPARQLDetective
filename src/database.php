@@ -155,7 +155,7 @@ class Database {
 
     public function getAmountProcessed() {
 	$lastRun = $this->getLastRun();
-        return $getLastRun["amount_processed"];
+        return $lastRun["amount_processed"];
     }
 
     public function getLastRun() {
