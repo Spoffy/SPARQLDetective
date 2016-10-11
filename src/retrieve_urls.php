@@ -24,7 +24,7 @@ $sparql_connection->debug = true;
 
 }
 
-function sparql_get_urls_for_predicate($predicate, $extra_prefixes=array()) {
+function sparql_get_urls_for_predicate($predicate, $namespaces=array()) {
     $find_urls_query = <<<SPARQL
 SELECT DISTINCT ?subject ?url ?graph ?labelInSameGraph ?anyOldLabel WHERE {
   GRAPH ?graph {
@@ -35,5 +35,5 @@ SELECT DISTINCT ?subject ?url ?graph ?labelInSameGraph ?anyOldLabel WHERE {
 }
 SPARQL;
 
-    return sparql_run_query_fetch_all($find_urls_query, $extra_prefixes);
+    return sparql_run_query_fetch_all($find_urls_query, $namespaces);
 }
