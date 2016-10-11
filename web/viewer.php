@@ -43,15 +43,14 @@
       <tbody>
 <?php
         foreach($url_status_rows as $row) {
-print_r( $row );
             print "<tr>";
-            print "<td><a href='".htmlspecialchars($row[0])."'>".htmlspecialchars($row[0])."</a></td>";
+            print "<td><a href='".htmlspecialchars($row['url'])."'>".htmlspecialchars($row['url'])."</a></td>";
             print "<td>";
-            if( !preg_match( '/^\d/', $row[1] ) ) { print "999 "; }
-            print htmlspecialchars( $row[1] );
+            if( !preg_match( '/^\d/', $row['status'] ) ) { print "999 "; }
+            print htmlspecialchars( $row['status'] );
             print "</td>";
             print "<td>";
-            if( $row[2] ) { 
+            if( $row['success'] ) { 
                 print "OK";
             } else {
                 print "FAIL";
