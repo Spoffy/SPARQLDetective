@@ -20,7 +20,7 @@ if($option_resume) {
     if($stateMachine->getCurrentState() == "PROCESSING") {
         $start_offset = $database->getAmountProcessed();
     } else {
-        print("Unable to resume, the system wasn't interrupted or has started doing something else.");
+        print("Unable to resume, the system wasn't interrupted or has started doing something else.\n");
         return 1;
     }
 } else {
@@ -33,7 +33,7 @@ if($option_resume) {
 }
 
 
-print("Started processing links");
+print("Started processing links.\n");
 
 
 $urlsToCheck = $database->getUrlsWithStartingOffset($start_offset);
