@@ -55,13 +55,13 @@ INSERT INTO url_statuses (url, status, success) VALUES
 ON DUPLICATE KEY UPDATE url=VALUES(url), status=VALUES(status), success=VALUES(success);
 DB;
 
-    public static $getFoundUrlsWithOffset = "SELECT DISTINCT url FROM open_data.urls_found LIMIT :starting_offset, 4294967296";
+    public static $getFoundUrlsWithOffset = "SELECT DISTINCT url FROM urls_found LIMIT :starting_offset, 4294967296";
     public static $addFoundUrl = <<< DB
 INSERT IGNORE INTO urls_found(subject, predicate, url, graph, label) VALUES
 (:subject, :predicate, :url, :graph, :label);
 DB;
 
-    public static $listCheckedURLs = "SELECT url, status, success FROM open_data.url_statuses";
+    public static $listCheckedURLs = "SELECT url, status, success FROM url_statuses";
     public static $lastRun = "SELECT * FROM system_status ORDER BY run_id DESC LIMIT 1";
     public static $newRun = "INSERT INTO system_status(start_time) VALUES (NOW())";
 
@@ -69,7 +69,7 @@ DB;
 
     //TODO Add proper support for multiple runs.
     //This might not protect against a new run starting while the old one is running.
-    public static $lastRunLocking = "SELECT run_id FROM open_data.system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;";
+    public static $lastRunLocking = "SELECT run_id FROM system_status ORDER BY run_id DESC LIMIT 1 FOR UPDATE;";
     //Only update the old state if it hasn't changed since the program last read it.
     public static $transitionRunState = <<<DB
 UPDATE system_status 
