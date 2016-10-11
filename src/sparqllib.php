@@ -119,7 +119,7 @@ class sparql_connection
 		{
 			$url .= "&".$this->params;
 		}
-		if( $this->debug ) { print "<div class='debug'><a href='".htmlspecialchars($url)."'>".htmlspecialchars($prefixes.$query)."</a></div>\n"; }
+		if( $this->debug ) { print "<div class='debug'><a href='".htmlspecialchars($url)."'>".htmlspecialchars($sparql)."</a></div>\n"; }
 		$this->errno = null;
 		$this->error = null;
 		$ch = curl_init($url);
