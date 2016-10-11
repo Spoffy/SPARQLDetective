@@ -1,5 +1,5 @@
 <?php
-    require_once(dirname(__DIR__) . "/requireHelper.php");
+    require_once(dirname(__DIR__) . "/src/requireHelper.php");
     require_once(__ROOT__ . "/src/database.php");
 
     $database = Database::createAndConnect();
