@@ -56,6 +56,10 @@
                 print "FAIL";
             }
             print "</td>"; 
+            print "<td>".htmlspecialchars($row['label'])."</td>";
+            print "<td>".htmlspecialchars($row['graph'])."</td>";
+            print "<td>".htmlspecialchars($row['subject'])."</td>";
+            print "<td>".htmlspecialchars($row['predicate'])."</td>";
             print "</tr>\n"; 
         }
 ?>

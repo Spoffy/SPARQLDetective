@@ -80,3 +80,29 @@ soton http://id.southampton.ac.uk/ns/
 ## Running SPARQL Detetive
 
 The system works in two passes. The first is ``bin/retrieve-urls`` which builds up a todo list of URLs to check from the SPARQL endpoint. The second phase is ``bin/check`` which does the actual checks. If check is stopped, it can be restarted from where it was. If you want to reset when check has not completed, use ``bin/transition-to-done``.
+
+We could probably improve this by making it into a single command with command line arguments. We will do that if people show interest in using this tool.
+
+For now to run a check do:
+
+```
+bin/retrieve-urls
+bin/check
+```
+
+If check is interrupted, it can restarted using ``bin/check -r`` or reset using ``bin/transition-to-done``
+
+The results are then stored in the url_statuses table which you can 
+* access directly, 
+* or use web/viewer.php to view it on the web
+* or run web/viewer.php on the command line to generate an HTML report. 
+
+The HTML report assumes that it can find the handy javascript tool tableviewer in a directory of that name relative to the HTML file.
+
+## Internals
+
+This uses 3 database tables which you can interact with directly if you want.
+
+* urls_found - contains URLs found in the endpoint by ``retrieve-urls``
+* url_statuses - contains the results of testing all the urls with ``check``
+* system_status - the current check run, and if it's complete or in progress

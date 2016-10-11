@@ -61,7 +61,7 @@ INSERT IGNORE INTO urls_found(subject, predicate, url, graph, label) VALUES
 (:subject, :predicate, :url, :graph, :label);
 DB;
 
-    public static $listCheckedURLs = "SELECT url, status, success FROM url_statuses";
+    public static $listCheckedURLs = "SELECT S.url, status, success, label, graph, subject, predicate FROM url_statuses as S JOIN urls_found as U USING (S.url=U.url)";
     public static $lastRun = "SELECT * FROM system_status ORDER BY run_id DESC LIMIT 1";
     public static $newRun = "INSERT INTO system_status(start_time) VALUES (NOW())";
 
