@@ -57,7 +57,7 @@ foreach($predicates as $predicate) {
         if( array_key_exists( $code, $done ) ) { continue; }
         $done[$code] = true;
         $urlInfo["predicate"] = $predicate;
-        if( $urlInfo["labelInGraph"] ) { 
+        if( $urlInfo["labelInSameGraph"] ) { 
             $urlInfo["label"] = $urlInfo["labelinGraph"];
         } elseif( $urlInfo["anyOldLabel"] ) { 
             $urlInfo["label"] = $urlInfo["anyOldLabel"];
