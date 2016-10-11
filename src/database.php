@@ -176,7 +176,8 @@ class Database {
     }
 
     public function updateAmountProcessed($value) {
-        $runId = $this->getLastRun()["run_id"];
+        $lastRun = $this->getLastRun();
+        $runId = $lastRun["run_id"];
         $statement = $this->conn->prepare(DBQueries::$updateAmountProcessed);
         $statement->execute(array(
             ":amount" => $value,
