@@ -39,6 +39,7 @@ function parseNamespaces($filePath) {
     return $namespaces;
 }
 
+chdir(__ROOT__); // means the config can be relative to the base of the app, or absolute
 $predicates = parsePredicates(Config::PREDICATE_FILE_PATH);
 $namespaces = parseNamespaces(Config::NAMESPACE_FILE_PATH);
 
