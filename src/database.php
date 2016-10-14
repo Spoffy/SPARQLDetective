@@ -37,12 +37,12 @@ PRIMARY KEY (`run_id`)
 DB;
 
     public static $insertTestData = <<< DB
-INSERT IGNORE INTO url_statuses  VALUES
+INSERT INTO url_statuses  VALUES
 ("http://www.google.co.uk", "200", True),
 ("https://www.yahoo.co.uk", "200", True),
 ("https://data.soton.ac.uk", "404", False);
 
-INSERT IGNORE INTO urls_found (`subject`, `predicate`, `url`, `graph`, `label`) VALUES 
+INSERT INTO urls_found (`subject`, `predicate`, `url`, `graph`, `label`) VALUES 
 ('http://id.southampton.ac.uk/point-of-service/university-post-office', 'foaf:homepage', 'http://www.soton.ac.uk/bcs/postoffice/index.html', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'University Post Office'),
 ('http://id.southampton.ac.uk/point-of-service/126-burgess-road', 'foaf:homepage', 'http://www.co-operative.coop', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'Co-op Food'),
 ('http://id.southampton.ac.uk/point-of-service/108-burgess-road', 'foaf:homepage', 'http://www.santander.co.uk', 'http://id.southampton.ac.uk/dataset/amenities/latest', 'Santander'),
@@ -57,7 +57,7 @@ DB;
 
     public static $getFoundUrlsWithOffset = "SELECT DISTINCT url FROM urls_found LIMIT :starting_offset, 4294967296";
     public static $addFoundUrl = <<< DB
-INSERT IGNORE INTO urls_found(subject, predicate, url, graph, label) VALUES
+INSERT INTO urls_found(subject, predicate, url, graph, label) VALUES
 (:subject, :predicate, :url, :graph, :label);
 DB;
 
