@@ -13,10 +13,20 @@
     $url_status_rows = $database->getUrlStatusRows();
 
     $frequency = array();
+    $predicates = array();
     foreach($url_status_rows as $row) {
         if( !isset( $frequency[$row['status']] ) ) { 
             $frequency[$row['status']] = 0;
         }
+        if( !isset( $predicates[$row['predicate']] ) ) { 
+            $predicates[$row['predicate']] = array( "ok"=>0, "fail"=>0, "total"=>0 );
+        }
+        if( $row['success'] ) { 
+            $predicates[$row['predicate']]['ok']++;
+        } else {
+            $predicates[$row['predicate']]['fail']++;
+        } 
+        $predicates[$row['predicate']]['total']++;
         $frequency[$row['status']]++;
     }
 
@@ -55,6 +65,7 @@
       </tbody>
     </table>
 
+    <h3>Summary of results</h3>
     <table class="tablesorter">
       <thead>
         <tr>
@@ -71,6 +82,31 @@
       </tbody>
     </table>
 
+    <h3>Results by predicate</h3>
+    <table class="tablesorter">
+      <thead>
+        <tr>
+          <th>Predicate</th>
+          <th>OK</th>
+          <th>Fail</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+<?php
+        foreach( $frequency as $predicate=>$stats ) {
+            print "<tr>";
+            print "<td>".htmlspecialchars($predicate)."</td>";
+            print "<td>".htmlspecialchars($stats["ok"])."</td>";
+            print "<td>".htmlspecialchars($stats["fail"])."</td>";
+            print "<td>".htmlspecialchars($stats["total"])."</td>";
+            print "</tr>";
+        }
+?>
+      </tbody>
+    </table>
+
+    <h3>Detailed results</h3>
     <table class="tablesorter">
       <thead>
         <tr>
