@@ -139,6 +139,7 @@ class Database {
             ":label" => $urlInfo["label"]
         );
         $statement->execute( $data );
+ print_r( $data );
  print_r( $statement->errorinfo() );
     }
 
