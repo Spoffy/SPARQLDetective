@@ -131,13 +131,14 @@ class Database {
 
     public function addUrl($urlInfo) {
         $statement = $this->conn->prepare(DBQueries::$addFoundUrl);
-        $statement->execute(array(
+        $data = array(
             ":subject" => $urlInfo["subject"],
             ":predicate" => $urlInfo["predicate"],
             ":url" => $urlInfo["url"],
             ":graph" => $urlInfo["graph"],
             ":label" => $urlInfo["label"]
-        ));
+        );
+        $statement->execute( $data );
  print_r( $statement->errorinfo() );
     }
 
