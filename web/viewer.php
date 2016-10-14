@@ -30,7 +30,9 @@
     <script src="tablesorter/jquery.tablesorter.min.js"></script>
     <script>$(document).ready(function() { $(".tablesorter").tablesorter(); } );</script>
     <link rel="stylesheet" type="text/css" media="all" href="tablesorter/themes/blue/style.css" />
-
+    <style>
+      .tablesorter td { white-space: nowrap; }
+    </style>
   </head>
 
   <body>
