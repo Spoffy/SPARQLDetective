@@ -3,11 +3,22 @@
     require_once(__ROOT__ . "/src/requireHelper.php");
     require_once(__ROOT__ . "/src/database.php");
 
+    $INCLUDE_OK = false;
+
     $database = Database::createAndConnect();
 
     $lastRun = $database->getLastRun();
     $lastRun["SPARQL Endpoint"] = Config::SPARQL_ENDPOINT;
     $url_status_rows = $database->getUrlStatusRows();
+
+    $frequency = array();
+    foreach($url_status_rows as $row) {
+        if( isset( $frequency[$row['status']] ) ) { 
+            $frequency[$row['status']] = 0;
+        }
+        $frequency[$row['status']]++;
+    }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,6 +34,8 @@
   </head>
 
   <body>
+    <h1>SPARQL Detective Report</h1>
+
     <table class="tablesorter">
       <thead>
         <tr>
@@ -42,35 +55,55 @@
     <table class="tablesorter">
       <thead>
         <tr>
+          <th>Status</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+<?php
+        foreach( $frequency as $status=>$count ) {
+            print "<tr><td>".htmlspecialchars($status)."</td><td>".htmlspecialchars($count)."</td></tr>";
+        }
+?>
+      </tbody>
+    </table>
+
+    <table class="tablesorter">
+      <thead>
+        <tr>
           <th>URL</th>
           <th>Return</th>
-          <th>Success</th>
+<?php if( $INCLUDE_OK ) { print "          <th>Success</th>"; } ?>
           <th>Label</th>
           <th>Graph</th>
-          <th>Subject</th>
-          <th>Predicate</th>
         </tr>
       </thead>
       <tbody>
 <?php
         foreach($url_status_rows as $row) {
+            if( $row['success'] && !$INCLUDE_OK ) { continue; }
             print "<tr>";
-            print "<td><a href='".htmlspecialchars($row['url'])."'>".htmlspecialchars($row['url'])."</a></td>";
+            print "<td>";
+            print "<a href='".htmlspecialchars($row['url'])."'>".htmlspecialchars($row['url'])."</a>";
+            $sparql = 'SELECT ?graph ?subject ?predicate WHERE { GRAPH ?graph { ?subject ?predicate <'.$row['url'].'> } }';
+            $sparqlurl = Config::SPARQL_ENDPOINT."?query=".urlencode( $sparql );
+            print " [<a href='".htmlspecialchars( $sparqlurl )."'>Uses</a>]";
+            print "</td>";
             print "<td>";
             if( !preg_match( '/^\d/', $row['status'] ) ) { print "999 "; }
             print htmlspecialchars( $row['status'] );
             print "</td>";
-            print "<td>";
-            if( $row['success'] ) { 
-                print "OK";
-            } else {
-                print "FAIL";
+            if( $INCLUDE_OK ) { 
+                print "<td>";
+                if( $row['success'] ) { 
+                    print "OK";
+                } else {
+                    print "FAIL";
+                }
+                print "</td>"; 
             }
-            print "</td>"; 
             print "<td>".htmlspecialchars($row['label'])."</td>";
             print "<td>".htmlspecialchars($row['graph'])."</td>";
-            print "<td>".htmlspecialchars($row['subject'])."</td>";
-            print "<td>".htmlspecialchars($row['predicate'])."</td>";
             print "</tr>\n"; 
         }
 ?>
