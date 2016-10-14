@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `urls_found` (
     `url` TEXT NOT NULL , 
     `graph` TEXT NOT NULL , 
     `label` TEXT NULL , 
-    PRIMARY KEY (`subject`(1000))
+    INDEX (`subject`(1000)),
+    INDEX (`url`(1000))
 );
 
 CREATE TABLE IF NOT EXISTS `url_statuses` ( 
