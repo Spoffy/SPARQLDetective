@@ -9,7 +9,7 @@ class Config {
     const MYSQL_PASSWORD = "";
 
     const SPARQL_ENDPOINT = "http://sparql.data.southampton.ac.uk/";
-    const SPARQL_TIMEOUT = 20;
+    const SPARQL_TIMEOUT = 300; // this gets ALL the URLs so can be quite slow
 
     const PREDICATE_FILE_PATH = "predicates.txt";
     const NAMESPACE_FILE_PATH = "namespaces.txt";

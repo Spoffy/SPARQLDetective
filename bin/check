@@ -21,14 +21,14 @@ if($option_resume) {
         $start_offset = $database->getAmountProcessed();
     } else {
         print("Unable to resume, the system wasn't interrupted or has started doing something else.\n");
-        return 1;
+        exit( 1 );
     }
 } else {
     try {
         $stateMachine->changeStateTo("PROCESSING");
     } catch(Exception $e) {
         print("Unable to start processing links, received Exception: " . $e->getMessage() . "\n");
-        return 1;
+        exit( 1 );
     }
 }
 
