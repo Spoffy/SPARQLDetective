@@ -13,7 +13,7 @@
 
     $frequency = array();
     foreach($url_status_rows as $row) {
-        if( isset( $frequency[$row['status']] ) ) { 
+        if( !isset( $frequency[$row['status']] ) ) { 
             $frequency[$row['status']] = 0;
         }
         $frequency[$row['status']]++;
