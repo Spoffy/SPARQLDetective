@@ -74,6 +74,7 @@
     <table class="tablesorter">
       <thead>
         <tr>
+          <th>Uses</th>
           <th>URL</th>
           <th>Return</th>
 <?php if( $INCLUDE_OK ) { print "          <th>Success</th>"; } ?>
@@ -87,10 +88,12 @@
             if( $row['success'] && !$INCLUDE_OK ) { continue; }
             print "<tr>";
             print "<td>";
+            print "<a href='".htmlspecialchars( $sparqlurl )."'>Uses</a>";
+            print "</td>";
+            print "<td>";
             print "<a href='".htmlspecialchars($row['url'])."'>".htmlspecialchars($row['url'])."</a>";
             $sparql = 'SELECT ?graph ?subject ?predicate WHERE { GRAPH ?graph { ?subject ?predicate <'.$row['url'].'> } }';
             $sparqlurl = Config::SPARQL_ENDPOINT."?query=".urlencode( $sparql ).$HUMAN_READABLE_SPARQL_OPTIONS;
-            print " [<a href='".htmlspecialchars( $sparqlurl )."'>Uses</a>]";
             print "</td>";
             print "<td>";
             if( !preg_match( '/^\d/', $row['status'] ) ) { print "999 "; }
