@@ -138,7 +138,7 @@ class Database {
             ":graph" => $urlInfo["graph"],
             ":label" => $urlInfo["label"]
         ));
- print_r( $statement->errorinfo );
+ print_r( $statement->errorinfo() );
     }
 
     public function getUrlsWithStartingOffset($offset) {
