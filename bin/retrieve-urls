@@ -46,6 +46,7 @@ $predicates = parsePredicates(Config::PREDICATE_FILE_PATH);
 $namespaces = parseNamespaces(Config::NAMESPACE_FILE_PATH);
 
 foreach($predicates as $predicate) {
+    print "PREDICATE: $predicate\n";
     $results = sparql_get_urls_for_predicate($predicate,$namespaces);
     if(!$results) {
         print("Error: Invalid SPARQL result, aborting.\n");
