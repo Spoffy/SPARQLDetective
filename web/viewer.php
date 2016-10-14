@@ -94,7 +94,7 @@
       </thead>
       <tbody>
 <?php
-        foreach( $frequency as $predicate=>$stats ) {
+        foreach( $predicates as $predicate=>$stats ) {
             print "<tr>";
             print "<td>".htmlspecialchars($predicate)."</td>";
             print "<td>".htmlspecialchars($stats["ok"])."</td>";
