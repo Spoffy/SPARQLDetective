@@ -4,6 +4,7 @@
     require_once(__ROOT__ . "/src/database.php");
 
     $INCLUDE_OK = false;
+    $HUMAN_READABLE_SPARQL_OPTIONS = '&show_inline=1&output=htmltab';
 
     $database = Database::createAndConnect();
 
@@ -88,7 +89,7 @@
             print "<td>";
             print "<a href='".htmlspecialchars($row['url'])."'>".htmlspecialchars($row['url'])."</a>";
             $sparql = 'SELECT ?graph ?subject ?predicate WHERE { GRAPH ?graph { ?subject ?predicate <'.$row['url'].'> } }';
-            $sparqlurl = Config::SPARQL_ENDPOINT."?query=".urlencode( $sparql );
+            $sparqlurl = Config::SPARQL_ENDPOINT."?query=".urlencode( $sparql ).$HUMAN_READABLE_SPARQL_OPTIONS;
             print " [<a href='".htmlspecialchars( $sparqlurl )."'>Uses</a>]";
             print "</td>";
             print "<td>";
