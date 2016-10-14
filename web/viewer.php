@@ -86,7 +86,7 @@
 <?php
         foreach($url_status_rows as $row) {
             if( $row['success'] && !$INCLUDE_OK ) { continue; }
-            $sparql = 'SELECT ?graph ?subject ?predicate WHERE { GRAPH ?graph { ?subject ?predicate <'.$row['url'].'> } }';
+            $sparql = "SELECT ?graph ?subject ?predicate WHERE {\n GRAPH ?graph { ?subject ?predicate <".$row['url']."> }\n}";
             $sparqlurl = Config::SPARQL_ENDPOINT."?query=".urlencode( $sparql ).$HUMAN_READABLE_SPARQL_OPTIONS;
             print "<tr>";
             print "<td>";
