@@ -72,7 +72,7 @@ try {
     $database->completeRun($lastRun["run_id"]);
 } catch(Exception $e) {
     print("Unable to complete last run, received exception: " . $e->getMessage() . "\n");
-    return 1;
+    exit 1;
 }
 
-return 0;
+exit 0;

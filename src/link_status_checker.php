@@ -57,7 +57,7 @@ class LinkCheck {
         //TODO Make this not a magic constant.
         //Prevents the checker from hanging on a single entry for large periods of time.
         curl_setopt($curlHandle, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($curlHandle, CURLOPT_TIMEOUT, 10);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT, 1);
         curl_setopt($curlHandle, CURLOPT_USERAGENT,'SPARQL Detective Bot Broken Link Checker <https://github.com/Spoffy/SPARQLDetective/>' );
         return $curlHandle;
     }
